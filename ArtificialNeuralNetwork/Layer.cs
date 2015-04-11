@@ -1,23 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ArtificialNeuralNetwork
+﻿namespace ArtificialNeuralNetwork
 {
     public class Layer
     {
         public enum TransferFunctions { Sigmoid, HyperbolicTangent };
         private ITransfer transfer;
 
-        public int NumberOfNeurons { get; set; }
         public double Bias { get; set; }
+        public int NumberOfNeurons { get; private set; }
         public bool PassThrough { get; private set; }
-        public double[,] Weights { get; set; }
+        public double[,] Weights { get; private set; }
         public double[] BeforeTransfer { get; private set; }
         public double[] LastOutput { get; private set; }
-
 
         public Layer(int numberOfNeurons, int numberOfNeuronsPrevLayer = 0, TransferFunctions tf = TransferFunctions.Sigmoid, double bias = 1)
         {
@@ -67,7 +60,7 @@ namespace ArtificialNeuralNetwork
                 this.BeforeTransfer = Weights.Multiply(input);
                 
                 //  Transfer weighted sum
-                this.BeforeTransfer.Function(this.transfer.Transfer);
+                output = this.BeforeTransfer.Function(this.transfer.Transfer);
             }
 
             //  Set layer output to output vector
