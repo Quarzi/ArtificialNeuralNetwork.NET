@@ -14,7 +14,7 @@ namespace AnnTesting
             
             output = ann.FeedForward(input);
 
-            Console.WriteLine(" Input to ANN: ({0}) Output from ANN: ({1})", input.VectorToString(), output.VectorToString());
+            Console.WriteLine(" Input to ANN: ({0})\n Output from ANN: ({1})", input.VectorToString(), output.VectorToString());
             Console.ReadKey(false);
         }
     }
