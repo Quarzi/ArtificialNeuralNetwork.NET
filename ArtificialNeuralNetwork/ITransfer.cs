@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ArtificialNeuralNetwork
+﻿namespace ArtificialNeuralNetwork
 {
     interface ITransfer
     {
