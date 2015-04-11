@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using ArtificialNeuralNetwork;
 
 namespace AnnTesting
 {
@@ -10,6 +8,14 @@ namespace AnnTesting
     {
         static void Main(string[] args)
         {
+            double[] input = new double[] { 0, 0 }, output;
+
+            ArtificialNeuralNetwork.ArtificialNeuralNetwork ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(2, 1, 2, 1);
+            
+            output = ann.FeedForward(input);
+
+            Console.WriteLine(" Input to ANN: ({0}) Output from ANN: ({1})", input.VectorToString(), output.VectorToString());
+            Console.ReadKey(false);
         }
     }
 }
