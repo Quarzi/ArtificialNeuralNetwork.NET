@@ -3,7 +3,6 @@
     public class Layer
     {
         public enum TransferFunctions { Sigmoid, HyperbolicTangent };
-        private ITransfer transfer;
 
         public double Bias { get; set; }
         public double[,] Weights { get; set; }
@@ -12,6 +11,8 @@
         public bool PassThrough { get; private set; }
         public double[] BeforeTransfer { get; private set; }
         public double[] LastOutput { get; private set; }
+
+        private ITransfer transfer;
 
         public Layer(int numberOfNeurons, int numberOfNeuronsPrevLayer = 0, TransferFunctions tf = TransferFunctions.Sigmoid, double bias = 1)
         {
@@ -61,7 +62,7 @@
                 //  Apply weights to input
                 this.BeforeTransfer = Weights.Multiply(input);
                 
-                //  Transfer weighted sum
+                //  Transfer weighted sum through layer
                 output = this.BeforeTransfer.ApplyFunction(this.transfer.Transfer);
             }
 
@@ -73,5 +74,7 @@
             
             return output;
         }
+
+
     }
 }
