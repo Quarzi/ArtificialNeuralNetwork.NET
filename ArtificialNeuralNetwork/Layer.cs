@@ -6,9 +6,10 @@
         private ITransfer transfer;
 
         public double Bias { get; set; }
+        public double[,] Weights { get; set; }
+        public int NumberOfInputNeurons { get; private set; }
         public int NumberOfNeurons { get; private set; }
         public bool PassThrough { get; private set; }
-        public double[,] Weights { get; private set; }
         public double[] BeforeTransfer { get; private set; }
         public double[] LastOutput { get; private set; }
 
@@ -23,11 +24,12 @@
                 //  Determine if it is a input layer or not
                 if (numberOfNeuronsPrevLayer == 0)
                 {
-                    this.PassThrough = true;                //  Input is passed through layer not affected by weighting and transfer function
+                    this.PassThrough = true;                //  Input is passed through layer not affected by weighting and transfer function (Utilized as input layer)
                 }
                 else
                 {
                     this.PassThrough = false;
+                    this.NumberOfInputNeurons = numberOfNeuronsPrevLayer + 1;   //  Accounting for bias neuron in previous layer
                     this.Weights = new double[NumberOfNeurons, numberOfNeuronsPrevLayer + 1].Randomize(2);   //  ... + 1 Accounts for the bias neuron from previous layer
                     this.BeforeTransfer = new double[1].Zeros();
                 }
@@ -60,7 +62,7 @@
                 this.BeforeTransfer = Weights.Multiply(input);
                 
                 //  Transfer weighted sum
-                output = this.BeforeTransfer.Function(this.transfer.Transfer);
+                output = this.BeforeTransfer.ApplyFunction(this.transfer.Transfer);
             }
 
             //  Set layer output to output vector

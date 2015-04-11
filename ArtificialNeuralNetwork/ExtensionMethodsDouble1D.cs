@@ -90,7 +90,7 @@ namespace ArtificialNeuralNetwork
             return result;
         }
 
-        public static double[] Function(this double[] me, Func<double, double> function)
+        public static double[] ApplyFunction(this double[] me, Func<double, double> function)
         {
             double[] output = new double[me.Length].Zeros();
 
