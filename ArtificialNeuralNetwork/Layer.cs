@@ -12,7 +12,7 @@
         public double[] BeforeTransfer { get; private set; }
         public double[] LastOutput { get; private set; }
 
-        private ITransfer transfer;
+        public ITransfer Transfer { get; private set; }
 
         public Layer(int numberOfNeurons, int numberOfNeuronsPrevLayer = 0, TransferFunctions tf = TransferFunctions.Sigmoid, double bias = 1)
         {
@@ -20,7 +20,7 @@
             {
                 this.NumberOfNeurons = numberOfNeurons;     //  Excluding bias-neuron
                 this.LastOutput = new double[numberOfNeurons];
-                this.Bias = 1;
+                this.Bias = -1;
 
                 //  Determine if it is a input layer or not
                 if (numberOfNeuronsPrevLayer == 0)
@@ -39,10 +39,10 @@
                 switch (tf)
                 {
                     case TransferFunctions.Sigmoid:
-                        this.transfer = new Sigmoid();
+                        this.Transfer = new Sigmoid();
                         break;
                     case TransferFunctions.HyperbolicTangent:
-                        this.transfer = new HyperbolicTangent();
+                        this.Transfer = new HyperbolicTangent();
                         break;
                 }
             }
@@ -63,7 +63,7 @@
                 this.BeforeTransfer = Weights.Multiply(input);
                 
                 //  Transfer weighted sum through layer
-                output = this.BeforeTransfer.ApplyFunction(this.transfer.Transfer);
+                output = this.BeforeTransfer.ApplyFunction(this.Transfer.Transfer);
             }
 
             //  Set layer output to output vector
