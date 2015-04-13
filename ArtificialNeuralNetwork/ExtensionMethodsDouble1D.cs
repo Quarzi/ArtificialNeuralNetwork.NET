@@ -40,15 +40,15 @@ namespace ArtificialNeuralNetwork
             return me;
         }
 
-        public static double[] DotProduct(this double[] lhs, double[] rhs)
+        public static double DotProduct(this double[] lhs, double[] rhs)
         {
-            double[] output = new double[lhs.GetLength(0)].Zeros();
+            double output = 0;
 
             if (lhs.Length == rhs.Length)
             {
                 for (int i = 0; i < lhs.GetLength(0); i++)
                 {
-                    output[i] += lhs[i] * rhs[i];
+                    output += lhs[i] * rhs[i];
                 }
             }
             else
@@ -179,6 +179,18 @@ namespace ArtificialNeuralNetwork
             }
 
             return Math.Sqrt(result);
+        }
+
+        public static double[] Multiply(this double[] me, double scale)
+        {
+            double[] result = new double[me.Length].Zeros();
+
+            for (int i = 0; i < me.Length; i++)
+            {
+                result[i] = me[i] * scale;
+            }
+
+            return result;
         }
     }
 }
