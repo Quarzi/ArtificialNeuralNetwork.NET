@@ -239,6 +239,7 @@ namespace ArtificialNeuralNetwork
             double[] input, target, output, errorRate, firstOrderDerivative;
             double[,] trimmedWeights;
             double[][,] deltaWeights = new double[this.networkLayers.Count][,];
+            double[] deltaBiases = new double[this.networkLayers.Count];
 
             //  Process epochs
             for (int epoch = 0; epoch < this.Epochs && latestError > this.Epsilon; epoch++)
@@ -282,6 +283,7 @@ namespace ArtificialNeuralNetwork
                         deltaWeights[layer] = new double[currentLayer.Weights.Rows(), currentLayer.Weights.Cols()].Zeros();
 
                     deltaWeights[layer] = deltaWeights[layer].Add(errorRate.OuterProduct(prevLayer.LastOutput.ConcatenateVector(new double[] { currentLayer.Bias })));
+                    deltaBiases[layer] += Math.Sqrt(errorRate.DotProduct(errorRate));
 
                 }
 
@@ -295,6 +297,7 @@ namespace ArtificialNeuralNetwork
                     currentLayer = this.networkLayers[layer];
 
                     currentLayer.Weights = currentLayer.Weights.Subtract(deltaWeights[layer].Multiply(this.LearningRate / (double)this.MiniBatchSize));
+                    currentLayer.Bias -= deltaBiases[layer];
                 }
 
                 index++;
