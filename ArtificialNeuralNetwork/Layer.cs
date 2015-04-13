@@ -20,7 +20,7 @@
             {
                 this.NumberOfNeurons = numberOfNeurons;     //  Excluding bias-neuron
                 this.LastOutput = new double[numberOfNeurons];
-                this.Bias = -1;
+                this.Bias = 1;
 
                 //  Determine if it is a input layer or not
                 if (numberOfNeuronsPrevLayer == 0)
