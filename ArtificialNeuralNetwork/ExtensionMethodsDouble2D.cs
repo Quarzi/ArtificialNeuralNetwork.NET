@@ -206,5 +206,35 @@ namespace ArtificialNeuralNetwork
 
             return result;
         }
+
+        public static double Min(this double[,] me)
+        {
+            double output = double.PositiveInfinity;
+
+            for (int i = 0; i < me.Rows(); i++)
+            {
+                for (int j = 0; j < me.Cols(); j++)
+                {
+                    if (me[i, j] < output) output = me[i, j];
+                }
+            }
+
+            return output;
+        }
+
+        public static double Max(this double[,] me)
+        {
+            double output = double.NegativeInfinity;
+
+            for (int i = 0; i < me.Rows(); i++)
+            {
+                for (int j = 0; j < me.Cols(); j++)
+                {
+                    if (me[i,j] > output) output = me[i,j];
+                }
+            }
+
+            return output;
+        }
     }
 }
