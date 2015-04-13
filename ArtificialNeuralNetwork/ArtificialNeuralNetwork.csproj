@@ -44,8 +44,10 @@
     <Compile Include="ExtensionMethodsDouble1D.cs" />
     <Compile Include="ExtensionMethodsDouble2D.cs" />
     <Compile Include="HyperbolicTangent.cs" />
+    <Compile Include="ICostFunction.cs" />
     <Compile Include="ITransfer.cs" />
     <Compile Include="Layer.cs" />
+    <Compile Include="MeanSquaredError.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sigmoid.cs" />
   </ItemGroup>
