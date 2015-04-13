@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtificialNeuralNetwork", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnnTesting", "AnnTesting\AnnTesting.csproj", "{36E01A42-D4B9-4474-BA03-BBBD0D9624A7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlottingError", "PlottingError\PlottingError.csproj", "{26590E22-5530-44D1-97AF-9F360D41DF92}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{36E01A42-D4B9-4474-BA03-BBBD0D9624A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{36E01A42-D4B9-4474-BA03-BBBD0D9624A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{36E01A42-D4B9-4474-BA03-BBBD0D9624A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26590E22-5530-44D1-97AF-9F360D41DF92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26590E22-5530-44D1-97AF-9F360D41DF92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26590E22-5530-44D1-97AF-9F360D41DF92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26590E22-5530-44D1-97AF-9F360D41DF92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
