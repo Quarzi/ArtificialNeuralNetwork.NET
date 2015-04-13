@@ -1,6 +1,6 @@
 ﻿namespace ArtificialNeuralNetwork
 {
-    interface ITransfer
+    public interface ITransfer
     {
         double Transfer(double x);
         double TransferFirstOrderDerivative(double x);
