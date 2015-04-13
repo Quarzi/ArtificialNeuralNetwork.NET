@@ -175,6 +175,23 @@ namespace ArtificialNeuralNetwork
             return result;
         }
 
+        public static double[,] RemoveColumn(this double[,] me, int index = 0)
+        {
+            double[,] result = new double[me.Rows(), me.Cols() - 1];
+
+            for (int j = 0, k = 0; j < result.Cols(); j++, k++)
+            {
+                if (index == k) k++;
+
+                for (int i = 0; i < result.Rows(); i++)
+                {
+                    result[i,j] = me[i, k];                    
+                }
+            }
+
+            return result;
+        }
+
         public static double[,] Transpose(this double[,] me)
         {
             double[,] result = new double[me.Cols(), me.Rows()].Zeros();
