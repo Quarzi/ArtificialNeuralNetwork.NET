@@ -5,8 +5,13 @@ namespace ArtificialNeuralNetwork
 {
     public class ArtificialNeuralNetwork
     {
-        private List<Layer> networkLayers;
+        public enum CostFunctions { MeanSquaredError, RootMeanSquaredError };
+        public enum TrainingMethods { GradientDescent, GeneticAlgorithm }
 
+        public int Epochs { get; set; }
+        public int MiniBatchSize { get; set; }
+        public double LearningRate { get; set; }
+        public double Epsilon { get; set; }
         public double[] LastInput { get; private set; }
         public double[] LastOutput { get; private set; }
 
@@ -22,6 +27,9 @@ namespace ArtificialNeuralNetwork
                 return false;
             }
         }
+
+        private List<Layer> networkLayers;
+        private ICostFunction cost;
 
         public ArtificialNeuralNetwork(int numberOfInputNeurons, int numberOfHiddenLayers, int numberOfNeuronsPerHiddenLayer, int numberOfOutputNeurons)
         {
@@ -64,6 +72,235 @@ namespace ArtificialNeuralNetwork
             output.CopyTo(this.LastOutput, 0);
 
             return output;
+        }
+
+        public double[] AnnTrainingBatch(double[,] inputMatrix, double[,] targetMatrix, int batchSize = 30, int epochs = 1000, TrainingMethods tm = TrainingMethods.GradientDescent, CostFunctions cf = CostFunctions.MeanSquaredError)
+        {
+            int numberOfAnnInputs = this.networkLayers[0].NumberOfNeurons,
+                numberOfAnnOutputs = this.networkLayers[this.networkLayers.Count - 1].NumberOfNeurons;
+
+            double[] errors = new double[1].Zeros();
+
+            //  Check dimensions for compatibility with each other and ANN
+            if (inputMatrix.Rows() == numberOfAnnInputs && targetMatrix.Rows() == numberOfAnnOutputs && inputMatrix.Cols() == targetMatrix.Cols())
+            {
+                this.Epochs = epochs;
+                this.LearningRate = 0.3;
+                this.Epsilon = 0.0001;
+                this.MiniBatchSize = batchSize;
+
+                switch (cf)
+                {
+                    case CostFunctions.MeanSquaredError:
+                        this.cost = new MeanSquaredError();
+                        break;
+                    case CostFunctions.RootMeanSquaredError:
+                        break;
+                    default:
+                        break;
+                }
+
+                switch (tm)
+                {
+                    case TrainingMethods.GradientDescent:
+                        errors = this.GradientDescentBackPropagationBatch(inputMatrix, targetMatrix);
+                        break;
+                    case TrainingMethods.GeneticAlgorithm:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return errors;
+        }
+
+        public double[] GradientDescentBackPropagationBatch(double[,] inputMatrix, double[,] targetMatrix)
+        {
+            int index = 0;
+            List<double> errorDevelopment = new List<double>();
+            Layer prevLayer, currentLayer, nextLayer;
+            double errorIntegral, latestError = 1000000 * this.Epsilon;
+            double[] input, target, output, errorRate, firstOrderDerivative;
+            double[,] trimmedWeights;
+            double[][,] deltaWeights = new double[this.networkLayers.Count][,];
+
+            //  Process epochs
+            for (int epoch = 0; epoch < this.Epochs && latestError > this.Epsilon; epoch++)
+            {
+                //  Wrap-over index if needed
+                if (index >= inputMatrix.Cols()) index = 0;
+
+                //  Process mini-batch, reset errorIntegral
+                errorIntegral = 0;
+                for (int batch = 0; batch < this.MiniBatchSize; batch++)
+                {
+                    //  Feed-forward input
+                    input = inputMatrix.ExtractColumn(index);
+                    target = targetMatrix.ExtractColumn(index);
+                    output = this.FeedForward(input);
+
+                    //  Calculate error
+                    errorIntegral += this.cost.Cost(output, target);
+                    errorRate = this.cost.CostFirstOrderDerivative(output, target);
+
+                    //  Back-propagate error
+                    for (int layer = this.networkLayers.Count - 1; layer > 0; layer--)
+                    {
+                        prevLayer = this.networkLayers[layer - 1];
+                        currentLayer = this.networkLayers[layer];
+                        firstOrderDerivative = currentLayer.BeforeTransfer.ApplyFunction(currentLayer.Transfer.TransferFirstOrderDerivative);
+
+                        //  Check if last layer
+                        if (layer == this.networkLayers.Count - 1)
+                        {
+                            errorRate = errorRate.HadamardProduct(firstOrderDerivative);
+                        }
+                        else    //  ... else
+                        {
+                            nextLayer = this.networkLayers[layer + 1];
+                            trimmedWeights = nextLayer.Weights.RemoveColumn(nextLayer.Weights.Cols() - 1);
+
+                            errorRate = trimmedWeights.Transpose().Multiply(errorRate).HadamardProduct(firstOrderDerivative);
+                        }
+
+                        if (deltaWeights[layer] == null)
+                            deltaWeights[layer] = new double[currentLayer.Weights.Rows(), currentLayer.Weights.Cols()].Zeros();
+
+                        deltaWeights[layer] = deltaWeights[layer].Add(errorRate.OuterProduct(prevLayer.LastOutput.ConcatenateVector(new double[] { currentLayer.Bias })));
+                    }
+                }
+
+                //  Calculate mean error over the previous batch
+                latestError = errorIntegral / (double)this.MiniBatchSize;
+                errorDevelopment.Add(latestError);
+
+                //  Update weights
+                for (int layer = 1; layer < deltaWeights.Length; layer++)
+                {
+                    currentLayer = this.networkLayers[layer];
+
+                    currentLayer.Weights = currentLayer.Weights.Subtract(deltaWeights[layer].Multiply(this.LearningRate / (double)this.MiniBatchSize));
+                }
+
+                index++;
+            }
+
+            return errorDevelopment.ToArray();
+        }
+
+        public double[] AnnTrainingOnline(double[,] inputMatrix, double[,] targetMatrix, int batchSize = 30, int epochs = 1000, TrainingMethods tm = TrainingMethods.GradientDescent, CostFunctions cf = CostFunctions.MeanSquaredError)
+        {
+            int numberOfAnnInputs = this.networkLayers[0].NumberOfNeurons,
+                numberOfAnnOutputs = this.networkLayers[this.networkLayers.Count - 1].NumberOfNeurons;
+
+            double[] errors = new double[1].Zeros();
+
+            //  Check dimensions for compatibility with each other and ANN
+            if (inputMatrix.Rows() == numberOfAnnInputs && targetMatrix.Rows() == numberOfAnnOutputs && inputMatrix.Cols() == targetMatrix.Cols())
+            {
+                this.Epochs = epochs;
+                this.LearningRate = 0.3;
+                this.Epsilon = 0.0001;
+                this.MiniBatchSize = batchSize;
+
+                switch (cf)
+                {
+                    case CostFunctions.MeanSquaredError:
+                        this.cost = new MeanSquaredError();
+                        break;
+                    case CostFunctions.RootMeanSquaredError:
+                        break;
+                    default:
+                        break;
+                }
+
+                switch (tm)
+                {
+                    case TrainingMethods.GradientDescent:
+                        errors = this.GradientDescentBackPropagationOnline(inputMatrix, targetMatrix);
+                        break;
+                    case TrainingMethods.GeneticAlgorithm:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return errors;
+        }
+
+        public double[] GradientDescentBackPropagationOnline(double[,] inputMatrix, double[,] targetMatrix)
+        {
+            int index = 0;
+            List<double> errorDevelopment = new List<double>();
+            Layer prevLayer, currentLayer, nextLayer;
+            double errorIntegral, latestError = 1000000 * this.Epsilon;
+            double[] input, target, output, errorRate, firstOrderDerivative;
+            double[,] trimmedWeights;
+            double[][,] deltaWeights = new double[this.networkLayers.Count][,];
+
+            //  Process epochs
+            for (int epoch = 0; epoch < this.Epochs && latestError > this.Epsilon; epoch++)
+            {
+                //  Wrap-over index if needed
+                if (index >= inputMatrix.Cols()) index = 0;
+
+                //  Process mini-batch, reset errorIntegral
+                errorIntegral = 0;
+
+                //  Feed-forward input
+                input = inputMatrix.ExtractColumn(index);
+                target = targetMatrix.ExtractColumn(index);
+                output = this.FeedForward(input);
+
+                //  Calculate error
+                errorIntegral += this.cost.Cost(output, target);
+                errorRate = this.cost.CostFirstOrderDerivative(output, target);
+
+                //  Back-propagate error through layers
+                for (int layer = this.networkLayers.Count - 1; layer > 0; layer--)
+                {
+                    prevLayer = this.networkLayers[layer - 1];
+                    currentLayer = this.networkLayers[layer];
+                    firstOrderDerivative = currentLayer.BeforeTransfer.ApplyFunction(currentLayer.Transfer.TransferFirstOrderDerivative);
+
+                    //  Check if last layer
+                    if (layer == this.networkLayers.Count - 1)
+                    {
+                        errorRate = errorRate.HadamardProduct(firstOrderDerivative);
+                    }
+                    else    //  ... else
+                    {
+                        nextLayer = this.networkLayers[layer + 1];
+                        trimmedWeights = nextLayer.Weights.RemoveColumn(nextLayer.Weights.Cols() - 1);
+
+                        errorRate = trimmedWeights.Transpose().Multiply(errorRate).HadamardProduct(firstOrderDerivative);
+                    }
+
+                    if (deltaWeights[layer] == null)
+                        deltaWeights[layer] = new double[currentLayer.Weights.Rows(), currentLayer.Weights.Cols()].Zeros();
+
+                    deltaWeights[layer] = deltaWeights[layer].Add(errorRate.OuterProduct(prevLayer.LastOutput.ConcatenateVector(new double[] { currentLayer.Bias })));
+
+                }
+
+                //  Calculate mean error over the previous batch
+                latestError = errorIntegral;// / (double)this.MiniBatchSize;
+                errorDevelopment.Add(latestError);
+
+                //  Update weights
+                for (int layer = 1; layer < deltaWeights.Length; layer++)
+                {
+                    currentLayer = this.networkLayers[layer];
+
+                    currentLayer.Weights = currentLayer.Weights.Subtract(deltaWeights[layer].Multiply(this.LearningRate / (double)this.MiniBatchSize));
+                }
+
+                index++;
+            }
+
+            return errorDevelopment.ToArray();
         }
     }
 }
