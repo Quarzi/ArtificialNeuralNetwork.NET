@@ -5,17 +5,19 @@ namespace ArtificialNeuralNetwork
 {
     public class ArtificialNeuralNetwork
     {
-        public enum CostFunctions { MeanSquaredError, RootMeanSquaredError };
-        public enum TrainingMethods { GradientDescent, GeneticAlgorithm }
+
+        public enum TrainingMethods { GradientDescent };
 
         public double[] LastInput { get; private set; }
         public double[] LastOutput { get; private set; }
+        public ITrainer Trainer { get; set; }
+        public List<Layer> Layers { get; set; }
 
         public bool IsAnnOkay
         {
             get
             {
-                if (this.networkLayers.Count > 1)
+                if (this.Layers.Count > 1)
                 {
                     return true;
                 }
@@ -23,10 +25,7 @@ namespace ArtificialNeuralNetwork
                 return false;
             }
         }
-
-        private List<Layer> networkLayers;
-        private ICostFunction cost;
-
+        
         public ArtificialNeuralNetwork(int numberOfInputNeurons, int numberOfHiddenLayers, int numberOfNeuronsPerHiddenLayer, int numberOfOutputNeurons)
         {
             this.InitializeNetwork(numberOfInputNeurons, numberOfHiddenLayers, numberOfNeuronsPerHiddenLayer, numberOfOutputNeurons);
@@ -34,20 +33,23 @@ namespace ArtificialNeuralNetwork
 
         public void InitializeNetwork(int numberOfInputNeurons, int numberOfHiddenLayers, int numberOfNeuronsPerHiddenLayer, int numberOfOutputNeurons)
         {
+            //  Set default trainer with default parameters
+            this.SetTrainer(TrainingMethods.GradientDescent);
+
             //  Initialize network
-            this.networkLayers = new List<Layer>();
+            this.Layers = new List<Layer>();
 
             //  Initialize input layer
-            this.networkLayers.Add(new Layer(numberOfInputNeurons));
+            this.Layers.Add(new Layer(numberOfInputNeurons));
 
             //  Initialize hidden layers if any
             for (int i = 0; i < numberOfHiddenLayers; i++)
             {
-                this.networkLayers.Add(new Layer(numberOfNeuronsPerHiddenLayer, this.networkLayers[i].NumberOfNeurons));
+                this.Layers.Add(new Layer(numberOfNeuronsPerHiddenLayer, this.Layers[i].NumberOfNeurons));
             }
 
             //  Initialize output layer
-            this.networkLayers.Add(new Layer(numberOfOutputNeurons, this.networkLayers[this.networkLayers.Count - 1].NumberOfNeurons));
+            this.Layers.Add(new Layer(numberOfOutputNeurons, this.Layers[this.Layers.Count - 1].NumberOfNeurons));
         }
 
         public double[] FeedForward(double[] input)
@@ -56,7 +58,7 @@ namespace ArtificialNeuralNetwork
             input.CopyTo(this.LastInput, 0);
 
             //  Feed-forward in each layer
-            foreach (var layer in this.networkLayers)
+            foreach (var layer in this.Layers)
             {
                 input = layer.FeedForward(input);
             }
@@ -68,6 +70,20 @@ namespace ArtificialNeuralNetwork
             output.CopyTo(this.LastOutput, 0);
 
             return output;
+        }
+
+        public void SetTrainer(TrainingMethods trainer)
+        {
+            switch (trainer)
+            {
+                case TrainingMethods.GradientDescent:
+                    this.Trainer = new BPGD(this);
+                    break;
+                default:
+                    this.Trainer = new BPGD(this);
+                    break;
+            }
+            
         }
     }
 }

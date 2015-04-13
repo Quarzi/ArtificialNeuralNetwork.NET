@@ -40,11 +40,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArtificialNeuralNetwork.cs" />
+    <Compile Include="BPGD.cs" />
     <Compile Include="DimensionMismatchException.cs" />
     <Compile Include="ExtensionMethodsDouble1D.cs" />
     <Compile Include="ExtensionMethodsDouble2D.cs" />
     <Compile Include="HyperbolicTangent.cs" />
     <Compile Include="ICostFunction.cs" />
+    <Compile Include="ITrainer.cs" />
     <Compile Include="ITransfer.cs" />
     <Compile Include="Layer.cs" />
     <Compile Include="MeanSquaredError.cs" />
