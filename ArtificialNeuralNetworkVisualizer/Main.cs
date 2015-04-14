@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 using ArtificialNeuralNetwork;
+using ArtificialNeuralNetwork.Extensions;
 using ANN = ArtificialNeuralNetwork;
 
 namespace ArtificialNeuralNetworkVisualizer

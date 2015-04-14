@@ -79,6 +79,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ArtificialNeuralNetworkExtensionMethods\ArtificialNeuralNetworkExtensionMethods.csproj">
+      <Project>{57bcdaf4-de27-4d1a-8f8b-94ad9d29fb90}</Project>
+      <Name>ArtificialNeuralNetworkExtensionMethods</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ArtificialNeuralNetwork\ArtificialNeuralNetwork.csproj">
       <Project>{172a1ec3-7732-4ea5-8032-aacb46818bde}</Project>
       <Name>ArtificialNeuralNetwork</Name>
