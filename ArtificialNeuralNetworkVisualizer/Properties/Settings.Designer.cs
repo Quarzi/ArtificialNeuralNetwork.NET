@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace PlottingError.Properties
+namespace ArtificialNeuralNetworkVisualizer.Properties
 {
 
 

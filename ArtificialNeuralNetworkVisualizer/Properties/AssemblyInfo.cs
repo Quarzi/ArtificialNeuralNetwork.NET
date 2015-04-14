@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("PlottingError")]
+[assembly: AssemblyTitle("ArtificialNeuralNetworkVisualizer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("PlottingError")]
+[assembly: AssemblyProduct("ArtificialNeuralNetworkVisualizer")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("6b5a8d37-d207-454f-91a4-c53ae8a173dc")]
+[assembly: Guid("53102860-7de8-4615-bccc-d2aa8ae5ab0a")]
 
 // Version information for an assembly consists of the following four values:
 //
