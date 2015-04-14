@@ -42,16 +42,16 @@ namespace ArtificialNeuralNetwork
             this.Layers = new List<Layer>();
 
             //  Initialize input layer
-            this.Layers.Add(new Layer(numberOfInputNeurons));
+            this.Layers.Add(new Layer("Input Layer", numberOfInputNeurons));
 
             //  Initialize hidden layers if any
             for (int i = 0; i < numberOfHiddenLayers; i++)
             {
-                this.Layers.Add(new Layer(numberOfNeuronsPerHiddenLayer, this.Layers[i].NumberOfNeurons));
+                this.Layers.Add(new Layer("Hidden Layer #" + (i + 1).ToString(), numberOfNeuronsPerHiddenLayer, this.Layers[i].NumberOfNeurons));
             }
 
             //  Initialize output layer
-            this.Layers.Add(new Layer(numberOfOutputNeurons, this.Layers[this.Layers.Count - 1].NumberOfNeurons));
+            this.Layers.Add(new Layer("Output Layer", numberOfOutputNeurons, this.Layers[this.Layers.Count - 1].NumberOfNeurons));
         }
 
         public double[] FeedForward(double[] input)

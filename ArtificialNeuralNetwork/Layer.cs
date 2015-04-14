@@ -13,11 +13,15 @@ namespace ArtificialNeuralNetwork
         public bool PassThrough { get; private set; }
         public double[] BeforeTransfer { get; private set; }
         public double[] LastOutput { get; private set; }
+        public string Text { get; set; }
 
         public ITransfer Transfer { get; private set; }
+        public TransferFunctions TransferFunction { get; private set; }
 
-        public Layer(int numberOfNeurons, int numberOfNeuronsPrevLayer = 0, TransferFunctions tf = TransferFunctions.Sigmoid, double bias = 1)
+        public Layer(string name, int numberOfNeurons, int numberOfNeuronsPrevLayer = 0, TransferFunctions tf = TransferFunctions.Sigmoid, double bias = 1)
         {
+            this.Text = name;
+
             if (numberOfNeurons > 0)
             {
                 this.NumberOfNeurons = numberOfNeurons;     //  Excluding bias-neuron
@@ -38,6 +42,7 @@ namespace ArtificialNeuralNetwork
                 }
 
                 //  Select transfer
+                this.TransferFunction = tf;
                 switch (tf)
                 {
                     case TransferFunctions.Sigmoid:
@@ -48,6 +53,11 @@ namespace ArtificialNeuralNetwork
                         break;
                 }
             }
+        }
+
+        public override string ToString()
+        {
+            return this.Text;
         }
 
         public double[] FeedForward(double[] input)
@@ -77,6 +87,18 @@ namespace ArtificialNeuralNetwork
             return output;
         }
 
-
+        public void SetTransfer (TransferFunctions tf)
+        {
+            this.TransferFunction = tf;
+            switch (tf)
+            {
+                case TransferFunctions.Sigmoid:
+                    this.Transfer = new Sigmoid();
+                    break;
+                case TransferFunctions.HyperbolicTangent:
+                    this.Transfer = new HyperbolicTangent();
+                    break;
+            }
+        }
     }
 }

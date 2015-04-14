@@ -18,13 +18,14 @@ namespace ArtificialNeuralNetwork
             this.LearningRate = 0.015;
             this.Epsilon = 0.01;
             this.SetCostFunction(CostFunctions.MeanSquaredError);
+            this.SetTrainingScheme(TrainingSchemes.OnlineLearning);
         }
 
-        public override double[] TrainAnn(double[,] inputMatrix, double[,] targetMatrix, TrainingSchemes ts = TrainingSchemes.OnlineLearning)
+        public override double[] TrainAnn(double[,] inputMatrix, double[,] targetMatrix)
         {
             double[] errorOutput = new double[1].Zeros();
 
-            switch (ts)
+            switch (this.TrainingScheme)
             {
                 case TrainingSchemes.OnlineLearning:
                     return this.TrainOnline(inputMatrix, targetMatrix);
@@ -93,7 +94,7 @@ namespace ArtificialNeuralNetwork
                     currentLayer = this.ann.Layers[layer];
 
                     currentLayer.Weights = currentLayer.Weights.Subtract(deltaWeights[layer].Multiply(this.LearningRate));
-                    currentLayer.Bias -= deltaBiases[layer];
+                    //currentLayer.Bias -= deltaBiases[layer];
 
                     deltaWeights[layer].Zeros();
                     deltaBiases[layer] = 0;

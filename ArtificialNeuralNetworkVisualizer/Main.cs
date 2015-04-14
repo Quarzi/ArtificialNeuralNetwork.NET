@@ -30,7 +30,8 @@ namespace ArtificialNeuralNetworkVisualizer
             //  Initialize create network section
             this.nrInputs.Text = "2";
             this.nrOutput.Text = "1";
-            this.hiddenLayers.Text = "";
+            this.hiddenLayers.Text = "1";
+            this.hiddenNeurons.Text = "2";
 
             //  Initialize training section
             this.learningMethod.DataSource = Enum.GetValues(typeof(ANN.ArtificialNeuralNetwork.TrainingMethods));
@@ -60,102 +61,84 @@ namespace ArtificialNeuralNetworkVisualizer
         private void trainAnn_Click(object sender, EventArgs e)
         {
             //  Check if training set is loaded
-            if (this.trainingSet != null)
+            if (this.ann != null && this.trainingSet != null && this.trainingSet.InputMatrix.Rows() == this.ann.Layers[0].NumberOfNeurons && this.trainingSet.TargetMatrix.Rows() == this.ann.Layers[this.ann.Layers.Count - 1].NumberOfNeurons)
             {
-                const double minX = -1, maxX = 1, trainingStepSize = Math.PI / 7000;
-                const int numberOfTrainingSteps = (int)((maxX - minX) / trainingStepSize) + 1;
-                const int hiddenLayers = 15, neuronsPerHiddenLayer = 15;
-                double[,] inputMatrix = new double[1, numberOfTrainingSteps], targetMatrix = new double[1, numberOfTrainingSteps];
-                int index = 0;
-                double x, y;
-                double[] yy;
+                this.chart1.Legends.Clear();
+                this.chart1.ChartAreas.Clear();
+                this.chart1.Series.Clear();
 
+                //  Setup training and start
+                this.ann.SetTrainer((ANN.ArtificialNeuralNetwork.TrainingMethods)this.learningMethod.SelectedItem);
+                this.ann.Trainer.SetCostFunction((Trainer.CostFunctions)this.costFunction.SelectedItem);
+                this.ann.Trainer.SetTrainingScheme((Trainer.TrainingSchemes)this.trainingMethod.SelectedItem);
+                this.ann.Trainer.Epochs = Int32.Parse(this.epochsValue.Text);
+                this.ann.Trainer.Epsilon = Double.Parse(this.epsilonValue.Text);
+                this.ann.Trainer.LearningRate = Double.Parse(this.learningRateValue.Text);
+                double[] error = this.ann.Trainer.TrainAnn(this.trainingSet.InputMatrix, this.trainingSet.TargetMatrix);
+
+                //  Setup visualization of data
+                Legend legend = new Legend("Legend");
                 ChartArea errorChart = new ChartArea("ErrorChart"), outputChart = new ChartArea("OutputChart");
                 Series errorSequence = new Series("Errors"), targetSequence = new Series("Target"), outputSequence = new Series("Output");
 
                 errorChart.AxisX.Title = "Epochs";
-                errorChart.AxisY.Title = "Error^2";
+                errorChart.AxisY.Title = "Cost";
 
                 outputChart.AxisX.Title = "x";
-                outputChart.AxisY.Title = "sin(x)";
+                outputChart.AxisY.Title = "f(x)";
 
                 errorSequence.ChartArea = errorChart.Name;
+                errorSequence.Legend = "Legend";
+                errorSequence.LegendText = "Cost";
                 errorSequence.Color = Color.Blue;
                 errorSequence.ChartType = SeriesChartType.Line;
 
                 targetSequence.ChartArea = outputChart.Name;
-                targetSequence.Legend = "Target";
+                targetSequence.Legend = "Legend";
+                targetSequence.LegendText = "Target";
                 targetSequence.Color = Color.Green;
                 targetSequence.ChartType = SeriesChartType.Line;
 
                 outputSequence.ChartArea = outputChart.Name;
-                outputSequence.Legend = "Actual";
+                outputSequence.Legend = "Legend";
+                outputSequence.LegendText = "Output";
                 outputSequence.Color = Color.Red;
                 outputSequence.ChartType = SeriesChartType.Line;
 
-                //  Generate input and target matrices for training of ANN
-                for (x = minX; x < maxX; x += trainingStepSize)
+                //  Get error over epochs
+                for (int i = 0; i < error.Length; i++)
                 {
-                    y = Math.Sin(x);
-
-                    inputMatrix[0, index] = x;
-                    targetMatrix[0, index] = y;
-                    index++;
+                    errorSequence.Points.Add(new DataPoint(i, error[i]));
                 }
 
-                TrainingSet trainingSet = new TrainingSet();
-                trainingSet.InputMatrix = inputMatrix;
-                trainingSet.TargetMatrix = targetMatrix;
-                //trainingSet.SaveSet("C:/Users/Kent/Desktop/trainingset.bin");
-
-                //  Train ANN
-                ArtificialNeuralNetwork.ArtificialNeuralNetwork myAnn = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputMatrix.Rows(), hiddenLayers, neuronsPerHiddenLayer, targetMatrix.Rows());
-
-                myAnn.Trainer.Epochs = 50;
-                myAnn.Trainer.LearningRate = 0.05;
-                myAnn.Trainer.Epsilon = 0.0001;
-
-                double[] errorDev = myAnn.Trainer.TrainAnn(inputMatrix, targetMatrix);
-
-                ////  Add errors to listbox
-                //this.listBox1.Items.Clear();
-                //foreach (var item in errorDev)
-                //{
-                //    this.listBox1.Items.Add(item);
-                //}
-
-                //  Extract relevant data
-                for (int i = 0; i < errorDev.Length; i++)
+                //  Generate actual and target output
+                double[] x, y, t;
+                for (int i = 0; i < this.trainingSet.InputMatrix.Cols(); i++)
                 {
-                    errorSequence.Points.Add(new DataPoint(i, errorDev[i]));
-                }
+                    x = this.trainingSet.InputMatrix.ExtractColumn(i);
+                    t = this.trainingSet.TargetMatrix.ExtractColumn(i);
+                    y = this.ann.FeedForward(x);
 
-                for (x = minX; x <= maxX; x += trainingStepSize)
-                {
-                    //y = 2 * Math.Pow(x, 3) + 2 / scale;
-                    y = Math.Sin(x);
-
-                    yy = myAnn.FeedForward(new double[] { x });
-                    outputSequence.Points.Add(new DataPoint(x, yy));
-                    targetSequence.Points.Add(new DataPoint(x, y));
+                    targetSequence.Points.Add(new DataPoint(x[0], t[0]));
+                    outputSequence.Points.Add(new DataPoint(x[0], y[0]));
                 }
 
                 //  Plot
-                this.chart1.ChartAreas.Clear();
+                this.chart1.Legends.Add(legend);
+
                 this.chart1.ChartAreas.Add(errorChart);
                 this.chart1.ChartAreas.Add(outputChart);
 
-                this.chart1.Series.Clear();
                 this.chart1.Series.Add(errorSequence);
                 this.chart1.Series.Add(targetSequence);
                 this.chart1.Series.Add(outputSequence);
             }
             else
             {
-                MessageBox.Show("There is no training set loaded. Cannot train network!", "Error");
+                MessageBox.Show("No artificial neural network was created nor the dimensions of it are compatible with the trainingset. Is dataset loaded? Training stopped!", "Error");
             }
 
-            
+
         }
 
         private void loadDataset_Click(object sender, EventArgs e)
@@ -179,6 +162,33 @@ namespace ArtificialNeuralNetworkVisualizer
                     MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
                 }
             }
+        }
+
+        private void generateAnn_Click(object sender, EventArgs e)
+        {
+            int inputs = Int32.Parse(this.nrInputs.Text),
+                hiddenLayers = Int32.Parse(this.hiddenLayers.Text),
+                neuronsPerHiddenLayer = Int32.Parse(this.hiddenNeurons.Text),
+                outputs = Int32.Parse(this.nrOutput.Text);
+
+            this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs);
+
+            this.layersList.DataSource = this.ann.Layers;
+        }
+
+        private void layersList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Layer selectedLayer = (Layer)this.layersList.SelectedItem;
+
+            this.transferFunction.DataSource = Enum.GetValues(typeof(ANN.Layer.TransferFunctions));
+            this.transferFunction.SelectedIndex = (int)selectedLayer.TransferFunction;
+        }
+
+        private void transferFunction_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            Layer selectedLayer = (Layer)this.layersList.SelectedItem;
+
+            selectedLayer.SetTransfer((Layer.TransferFunctions)(this.transferFunction.SelectedItem));
         }
     }
 }

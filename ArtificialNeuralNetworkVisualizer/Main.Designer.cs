@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -59,6 +59,9 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.layersList = new System.Windows.Forms.ListBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.transferFunction = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -68,13 +71,13 @@
             // chart1
             // 
             this.chart1.BackColor = System.Drawing.SystemColors.Control;
-            chartArea1.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea1);
+            chartArea5.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea5);
             this.chart1.Location = new System.Drawing.Point(0, -2);
             this.chart1.Name = "chart1";
-            series1.ChartArea = "ChartArea1";
-            series1.Name = "Series1";
-            this.chart1.Series.Add(series1);
+            series5.ChartArea = "ChartArea1";
+            series5.Name = "Series1";
+            this.chart1.Series.Add(series5);
             this.chart1.Size = new System.Drawing.Size(932, 573);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
@@ -96,9 +99,9 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.loadDataset);
-            this.groupBox1.Location = new System.Drawing.Point(950, 390);
+            this.groupBox1.Location = new System.Drawing.Point(938, 334);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(315, 215);
+            this.groupBox1.Size = new System.Drawing.Size(309, 281);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Artificial Neural Network Training";
@@ -117,7 +120,7 @@
             this.learningMethod.FormattingEnabled = true;
             this.learningMethod.Location = new System.Drawing.Point(101, 54);
             this.learningMethod.Name = "learningMethod";
-            this.learningMethod.Size = new System.Drawing.Size(208, 21);
+            this.learningMethod.Size = new System.Drawing.Size(201, 21);
             this.learningMethod.TabIndex = 13;
             // 
             // label5
@@ -134,14 +137,14 @@
             this.trainingMethod.FormattingEnabled = true;
             this.trainingMethod.Location = new System.Drawing.Point(101, 81);
             this.trainingMethod.Name = "trainingMethod";
-            this.trainingMethod.Size = new System.Drawing.Size(208, 21);
+            this.trainingMethod.Size = new System.Drawing.Size(201, 21);
             this.trainingMethod.TabIndex = 11;
             // 
             // trainAnn
             // 
             this.trainAnn.Location = new System.Drawing.Point(208, 161);
             this.trainAnn.Name = "trainAnn";
-            this.trainAnn.Size = new System.Drawing.Size(101, 46);
+            this.trainAnn.Size = new System.Drawing.Size(94, 46);
             this.trainAnn.TabIndex = 10;
             this.trainAnn.Text = "Train ANN";
             this.trainAnn.UseVisualStyleBackColor = true;
@@ -161,7 +164,7 @@
             this.learningRateCombo.FormattingEnabled = true;
             this.learningRateCombo.Location = new System.Drawing.Point(208, 134);
             this.learningRateCombo.Name = "learningRateCombo";
-            this.learningRateCombo.Size = new System.Drawing.Size(101, 21);
+            this.learningRateCombo.Size = new System.Drawing.Size(94, 21);
             this.learningRateCombo.TabIndex = 8;
             this.learningRateCombo.SelectedIndexChanged += new System.EventHandler(this.learningRateCombo_SelectedIndexChanged);
             // 
@@ -170,28 +173,28 @@
             this.costFunction.FormattingEnabled = true;
             this.costFunction.Location = new System.Drawing.Point(101, 108);
             this.costFunction.Name = "costFunction";
-            this.costFunction.Size = new System.Drawing.Size(208, 21);
+            this.costFunction.Size = new System.Drawing.Size(201, 21);
             this.costFunction.TabIndex = 7;
             // 
             // epochsValue
             // 
             this.epochsValue.Location = new System.Drawing.Point(101, 187);
             this.epochsValue.Name = "epochsValue";
-            this.epochsValue.Size = new System.Drawing.Size(101, 20);
+            this.epochsValue.Size = new System.Drawing.Size(94, 20);
             this.epochsValue.TabIndex = 6;
             // 
             // epsilonValue
             // 
             this.epsilonValue.Location = new System.Drawing.Point(101, 161);
             this.epsilonValue.Name = "epsilonValue";
-            this.epsilonValue.Size = new System.Drawing.Size(101, 20);
+            this.epsilonValue.Size = new System.Drawing.Size(94, 20);
             this.epsilonValue.TabIndex = 5;
             // 
             // learningRateValue
             // 
             this.learningRateValue.Location = new System.Drawing.Point(101, 135);
             this.learningRateValue.Name = "learningRateValue";
-            this.learningRateValue.Size = new System.Drawing.Size(101, 20);
+            this.learningRateValue.Size = new System.Drawing.Size(94, 20);
             this.learningRateValue.TabIndex = 4;
             // 
             // label3
@@ -225,7 +228,7 @@
             // 
             this.loadDataset.Location = new System.Drawing.Point(6, 19);
             this.loadDataset.Name = "loadDataset";
-            this.loadDataset.Size = new System.Drawing.Size(303, 23);
+            this.loadDataset.Size = new System.Drawing.Size(296, 23);
             this.loadDataset.TabIndex = 0;
             this.loadDataset.Text = "Load Input/Target matrices";
             this.loadDataset.UseVisualStyleBackColor = true;
@@ -237,7 +240,7 @@
             this.statusLabel});
             this.statusStrip1.Location = new System.Drawing.Point(0, 634);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1277, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1255, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -249,6 +252,9 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.transferFunction);
+            this.groupBox2.Controls.Add(this.label11);
+            this.groupBox2.Controls.Add(this.layersList);
             this.groupBox2.Controls.Add(this.generateAnn);
             this.groupBox2.Controls.Add(this.nrOutput);
             this.groupBox2.Controls.Add(this.hiddenLayers);
@@ -260,19 +266,20 @@
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Location = new System.Drawing.Point(938, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(309, 147);
+            this.groupBox2.Size = new System.Drawing.Size(309, 316);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Artificial Neural Network";
             // 
             // generateAnn
             // 
-            this.generateAnn.Location = new System.Drawing.Point(9, 118);
+            this.generateAnn.Location = new System.Drawing.Point(9, 117);
             this.generateAnn.Name = "generateAnn";
             this.generateAnn.Size = new System.Drawing.Size(294, 23);
             this.generateAnn.TabIndex = 8;
             this.generateAnn.Text = "Generate new network with randomized weights";
             this.generateAnn.UseVisualStyleBackColor = true;
+            this.generateAnn.Click += new System.EventHandler(this.generateAnn_Click);
             // 
             // nrOutput
             // 
@@ -338,11 +345,38 @@
             this.label7.TabIndex = 0;
             this.label7.Text = "Number of inputs:";
             // 
+            // layersList
+            // 
+            this.layersList.FormattingEnabled = true;
+            this.layersList.Location = new System.Drawing.Point(9, 147);
+            this.layersList.Name = "layersList";
+            this.layersList.Size = new System.Drawing.Size(293, 134);
+            this.layersList.TabIndex = 9;
+            this.layersList.SelectedIndexChanged += new System.EventHandler(this.layersList_SelectedIndexChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(9, 290);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(90, 13);
+            this.label11.TabIndex = 10;
+            this.label11.Text = "Transfer function:";
+            // 
+            // transferFunction
+            // 
+            this.transferFunction.FormattingEnabled = true;
+            this.transferFunction.Location = new System.Drawing.Point(105, 287);
+            this.transferFunction.Name = "transferFunction";
+            this.transferFunction.Size = new System.Drawing.Size(197, 21);
+            this.transferFunction.TabIndex = 11;
+            this.transferFunction.SelectionChangeCommitted += new System.EventHandler(this.transferFunction_SelectionChangeCommitted);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1277, 656);
+            this.ClientSize = new System.Drawing.Size(1255, 656);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
@@ -394,6 +428,9 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox transferFunction;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ListBox layersList;
     }
 }
 

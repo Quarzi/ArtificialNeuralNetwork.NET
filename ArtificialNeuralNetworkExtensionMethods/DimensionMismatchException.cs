@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ArtificialNeuralNetwork
+namespace ArtificialNeuralNetwork.Extensions
 {
     public class DimensionMismatchException : Exception
     {

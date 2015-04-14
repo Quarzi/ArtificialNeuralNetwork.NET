@@ -15,8 +15,9 @@ namespace ArtificialNeuralNetwork
         public double LearningRate { get; set; }
         public double Epsilon { get; set; }
         public ICostFunction CostFunction { get; protected set; }
+        public TrainingSchemes TrainingScheme { get; protected set; }
 
-        public abstract double[] TrainAnn(double[,] inputMatrix, double[,] targetMatrix, TrainingSchemes ts = TrainingSchemes.OnlineLearning);
+        public abstract double[] TrainAnn(double[,] inputMatrix, double[,] targetMatrix);
 
         public void SetCostFunction(CostFunctions cf)
         {
@@ -29,6 +30,11 @@ namespace ArtificialNeuralNetwork
                     this.CostFunction = new MeanSquaredError();
                     break;
             }
+        }
+
+        public void SetTrainingScheme(TrainingSchemes ts)
+        {
+            this.TrainingScheme = ts;
         }
     }
 }

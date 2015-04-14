@@ -35,9 +35,11 @@ namespace ArtificialNeuralNetwork
         public TrainingSet LoadSet(Stream file)
         {
             BinaryFormatter formatter = new BinaryFormatter();
-
-            this.Equals((TrainingSet)formatter.Deserialize(file));
-
+            TrainingSet train = (TrainingSet)formatter.Deserialize(file);
+            this.InputMatrix = train.InputMatrix;
+            this.TargetMatrix = train.TargetMatrix;
+            file.Close();
+            
             return this;
         }
 
