@@ -41,9 +41,6 @@
   <ItemGroup>
     <Compile Include="ArtificialNeuralNetwork.cs" />
     <Compile Include="BPGD.cs" />
-    <Compile Include="DimensionMismatchException.cs" />
-    <Compile Include="ExtensionMethodsDouble1D.cs" />
-    <Compile Include="ExtensionMethodsDouble2D.cs" />
     <Compile Include="HyperbolicTangent.cs" />
     <Compile Include="ICostFunction.cs" />
     <Compile Include="ITransfer.cs" />
@@ -53,6 +50,12 @@
     <Compile Include="Sigmoid.cs" />
     <Compile Include="Trainer.cs" />
     <Compile Include="TrainingSet.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ArtificialNeuralNetworkExtensionMethods\ArtificialNeuralNetworkExtensionMethods.csproj">
+      <Project>{57bcdaf4-de27-4d1a-8f8b-94ad9d29fb90}</Project>
+      <Name>ArtificialNeuralNetworkExtensionMethods</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

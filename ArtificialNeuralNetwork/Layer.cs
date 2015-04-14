@@ -1,4 +1,6 @@
-﻿namespace ArtificialNeuralNetwork
+﻿using ArtificialNeuralNetwork.Extensions;
+
+namespace ArtificialNeuralNetwork
 {
     public class Layer
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ArtificialNeuralNetwork
+namespace ArtificialNeuralNetwork.Extensions
 {
     public static class ExtensionMethodsDouble1D
     {

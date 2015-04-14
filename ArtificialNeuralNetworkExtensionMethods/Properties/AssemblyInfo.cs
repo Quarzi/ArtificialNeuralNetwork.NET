@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AnnTesting")]
+[assembly: AssemblyTitle("ArtificialNeuralNetworkExtensionMethods")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AnnTesting")]
+[assembly: AssemblyProduct("ArtificialNeuralNetworkExtensionMethods")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("416f685c-6c99-4963-8ef9-d7d3bd1bb0f6")]
+[assembly: Guid("1661e2be-0fc3-4a04-a854-63f5c6610f37")]
 
 // Version information for an assembly consists of the following four values:
 //

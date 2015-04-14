@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ArtificialNeuralNetwork
+namespace ArtificialNeuralNetwork.Extensions
 {
     public static class ExtensionMethodsDouble2D
     {
@@ -177,7 +177,7 @@ namespace ArtificialNeuralNetwork
 
         public static double[,] RemoveColumn(this double[,] me, int index = 0)
         {
-            double[,] result = new double[me.Rows(), me.Cols() - 1];
+            double[,] result = new double[me.Rows(), me.Cols() - 1].Zeros();
 
             for (int j = 0, k = 0; j < result.Cols(); j++, k++)
             {

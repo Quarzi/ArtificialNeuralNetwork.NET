@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using ArtificialNeuralNetwork.Extensions;
+
 namespace ArtificialNeuralNetwork
 {
     public class ArtificialNeuralNetwork

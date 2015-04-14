@@ -1,5 +1,7 @@
 ﻿using System;
 
+using ArtificialNeuralNetwork.Extensions;
+
 namespace ArtificialNeuralNetwork
 {
     public class MeanSquaredError : ICostFunction
