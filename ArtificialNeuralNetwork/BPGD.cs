@@ -6,39 +6,26 @@ using System.Threading.Tasks;
 
 namespace ArtificialNeuralNetwork
 {
-    public class BPGD : ITrainer
+    public class BPGD : Trainer
     {
-        public enum TrainingSchemes { OnlineLearning };
-        public enum CostFunctions { MeanSquaredError };
-    
-        public int Epochs { get; set; }
-        public int MiniBatchSize { get; set; }
-        public double LearningRate { get; set; }
-        public double Epsilon { get; set; }
-        public ICostFunction CostFunction { get; private set; }
-        public TrainingSchemes TrainingScheme { get; private set; }
-
         private ArtificialNeuralNetwork ann;
-        
-        public BPGD(ArtificialNeuralNetwork ann, CostFunctions cf = CostFunctions.MeanSquaredError, TrainingSchemes ts = TrainingSchemes.OnlineLearning)
+
+        public BPGD(ArtificialNeuralNetwork ann)
         {
             this.ann = ann;
 
             //  Initialize standard values
-            this.Epochs = 100;
-            this.MiniBatchSize = 10;
-            this.LearningRate = 0.05;
-            this.Epsilon = 0.001;
-
-            this.TrainingScheme = ts;
-            this.SetCostFunction(cf);
+            this.Epochs = 300;
+            this.LearningRate = 0.015;
+            this.Epsilon = 0.01;
+            this.SetCostFunction(CostFunctions.MeanSquaredError);
         }
 
-        double[] ITrainer.TrainAnn(double[,] inputMatrix, double[,] targetMatrix)
+        public override double[] TrainAnn(double[,] inputMatrix, double[,] targetMatrix, TrainingSchemes ts = TrainingSchemes.OnlineLearning)
         {
             double[] errorOutput = new double[1].Zeros();
 
-            switch (this.TrainingScheme)
+            switch (ts)
             {
                 case TrainingSchemes.OnlineLearning:
                     return this.TrainOnline(inputMatrix, targetMatrix);
@@ -52,20 +39,17 @@ namespace ArtificialNeuralNetwork
             int index = 0;
             List<double> errorDevelopment = new List<double>();
             Layer prevLayer, currentLayer, nextLayer;
-            double errorIntegral, latestError = 1000000 * this.Epsilon;
+            double error = double.PositiveInfinity;
             double[] input, target, output, errorRate, firstOrderDerivative;
             double[,] trimmedWeights;
             double[][,] deltaWeights = new double[this.ann.Layers.Count][,];
             double[] deltaBiases = new double[this.ann.Layers.Count];
 
             //  Process epochs
-            for (int epoch = 0; epoch < this.Epochs && latestError > this.Epsilon; epoch++)
+            for (int epoch = 0; epoch < this.Epochs && error > this.Epsilon; epoch++)
             {
                 //  Wrap-over index if needed
                 if (index >= inputMatrix.Cols()) index = 0;
-
-                //  Process mini-batch, reset errorIntegral
-                errorIntegral = 0;
 
                 //  Feed-forward input
                 input = inputMatrix.ExtractColumn(index);
@@ -73,8 +57,9 @@ namespace ArtificialNeuralNetwork
                 output = this.ann.FeedForward(input);
 
                 //  Calculate error
-                errorIntegral += this.CostFunction.Cost(output, target);
+                error = this.CostFunction.Cost(output, target); ;
                 errorRate = this.CostFunction.CostFirstOrderDerivative(output, target);
+                errorDevelopment.Add(error);
 
                 //  Back-propagate error through layers
                 for (int layer = this.ann.Layers.Count - 1; layer > 0; layer--)
@@ -100,21 +85,20 @@ namespace ArtificialNeuralNetwork
                         deltaWeights[layer] = new double[currentLayer.Weights.Rows(), currentLayer.Weights.Cols()].Zeros();
 
                     deltaWeights[layer] = deltaWeights[layer].Add(errorRate.OuterProduct(prevLayer.LastOutput.ConcatenateVector(new double[] { currentLayer.Bias })));
-                    deltaBiases[layer] += Math.Sqrt(errorRate.DotProduct(errorRate));
+                    deltaBiases[layer] += errorRate.EuclideanLength();
 
                 }
-
-                //  Calculate mean error over the previous batch
-                latestError = errorIntegral;// / (double)this.MiniBatchSize;
-                errorDevelopment.Add(latestError);
 
                 //  Update weights
                 for (int layer = 1; layer < deltaWeights.Length; layer++)
                 {
                     currentLayer = this.ann.Layers[layer];
 
-                    currentLayer.Weights = currentLayer.Weights.Subtract(deltaWeights[layer].Multiply(this.LearningRate / (double)this.MiniBatchSize));
+                    currentLayer.Weights = currentLayer.Weights.Subtract(deltaWeights[layer].Multiply(this.LearningRate));
                     currentLayer.Bias -= deltaBiases[layer];
+
+                    deltaWeights[layer].Zeros();
+                    deltaBiases[layer] = 0;
                 }
 
                 index++;
@@ -122,18 +106,5 @@ namespace ArtificialNeuralNetwork
 
             return errorDevelopment.ToArray();
         }
-
-        public void SetCostFunction(CostFunctions cf)
-        {
-            switch (cf)
-            {
-                case CostFunctions.MeanSquaredError:
-                    this.CostFunction = new MeanSquaredError();
-                    break;
-                default:
-                    this.CostFunction = new MeanSquaredError();
-                    break;
-            }
-        }
-}
+    }
 }
