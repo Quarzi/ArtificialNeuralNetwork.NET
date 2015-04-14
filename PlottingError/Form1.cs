@@ -15,8 +15,6 @@ namespace PlottingError
 {
     public partial class Form1 : Form
     {
-        ArtificialNeuralNetwork.ArtificialNeuralNetwork ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(2, 3, 3, 1);
-
         public Form1()
         {
             InitializeComponent();
@@ -24,81 +22,99 @@ namespace PlottingError
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ////  Generate data matrices for training of ANN as XOR gate
-            //Console.WriteLine("\n Training ANN ...\n");
+            //  Generate data matrices for training of ANN as XOR gate
+            ChartArea errorChart = new ChartArea("ErrorChart");
+            Series errorSequence = new Series("Errors");
 
-            //Random rand = new Random((int)DateTime.Now.ToBinary());
-            //const int numberOfInputSequences = 16;
-            //double[,] inputMatrix = new double[2, numberOfInputSequences], targetMatrix = new double[1, numberOfInputSequences];
-            //int x1, x2;
+            errorChart.AxisX.Title = "Epochs";
+            errorChart.AxisY.Title = "Error^2";
 
-            //for (int i = 0; i < numberOfInputSequences; i++)
-            //{
-            //    x1 = rand.Next(0, 2);
-            //    x2 = rand.Next(0, 2);
+            errorSequence.ChartArea = errorChart.Name;
+            errorSequence.Color = Color.Blue;
+            errorSequence.ChartType = SeriesChartType.Line;
 
-            //    inputMatrix[0, i] = x1;
-            //    inputMatrix[1, i] = x2;
-            //    targetMatrix[0, i] = x1 ^ x2;
-            //}
+            double[,] inputMatrix = new double[,] { { 0, 0, 1, 1 }, { 0, 1, 0, 1 } }, targetMatrix = new double[,] { { 0, 1, 1, 0 } };
+            
+            //  Train ANN
+            ArtificialNeuralNetwork.ArtificialNeuralNetwork myAnn = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputMatrix.Rows(), 1, 2, targetMatrix.Rows());
 
-            //double[] errorDev = this.ann.AnnTrainingOnline(inputMatrix, targetMatrix, 4, 10000);
+            myAnn.Trainer.Epochs = 100;
+            myAnn.Trainer.LearningRate = 0.01;
+            myAnn.Trainer.Epsilon = 0.1;
 
-            ////  Plot
-            //this.chart1.Series.Clear();
+            double[] errorDev = myAnn.Trainer.TrainAnn(inputMatrix, targetMatrix);
 
-            //Series serie = new Series("Error");
-            //serie.ChartType = SeriesChartType.Line;
-            ////serie.Points.Add(errorDev);
-            //for (int i = 0; i < errorDev.Length; i++)
-            //{
-            //    serie.Points.Add(new DataPoint(i, errorDev[i]));
-            //}
+            //  Add errors to listbox
+            int i = 0;
+            this.listBox1.Items.Clear();
+            foreach (var item in errorDev)
+            {
+                this.listBox1.Items.Add(item);
+                errorSequence.Points.Add(new DataPoint(i, item));
+                i++;
+            }
 
-
-            //this.chart1.Series.Add(serie);
+            double[] yy = myAnn.FeedForward(new double[] { 1,0 });
+            
+            //  Plot
+            this.chart1.ChartAreas.Clear();
+            this.chart1.ChartAreas.Add(errorChart);
+            
+            this.chart1.Series.Clear();
+            this.chart1.Series.Add(errorSequence);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            const double minX = -5, maxX = 5, stepSize = 0.001, trainingStepSize = Math.PI / 5;
+            const double minX = -2 * Math.PI, maxX = 2 * Math.PI, trainingStepSize = Math.PI / 7000;
             const int numberOfTrainingSteps = (int)((maxX - minX) / trainingStepSize) + 1;
-            const int hiddenLayers = 3, neuronsPerHiddenLayer = 5;
+            const int hiddenLayers = 10, neuronsPerHiddenLayer = 10;
             double[,] inputMatrix = new double[1, numberOfTrainingSteps], targetMatrix = new double[1, numberOfTrainingSteps];
             int index = 0;
-            double x, y, est;
+            double x, y;
+            double[] yy;
 
             ChartArea errorChart = new ChartArea("ErrorChart"), outputChart = new ChartArea("OutputChart");
             Series errorSequence = new Series("Errors"), targetSequence = new Series("Target"), outputSequence = new Series("Output");
-            
+
+            errorChart.AxisX.Title = "Epochs";
+            errorChart.AxisY.Title = "Error^2";
+
+            outputChart.AxisX.Title = "x";
+            outputChart.AxisY.Title = "sin(x)";
+
             errorSequence.ChartArea = errorChart.Name;
-            errorSequence.Color = Color.Red;
+            errorSequence.Color = Color.Blue;
             errorSequence.ChartType = SeriesChartType.Line;
 
             targetSequence.ChartArea = outputChart.Name;
+            targetSequence.Legend = "Target";
             targetSequence.Color = Color.Green;
             targetSequence.ChartType = SeriesChartType.Line;
 
             outputSequence.ChartArea = outputChart.Name;
+            outputSequence.Legend = "Actual";
             outputSequence.Color = Color.Red;
             outputSequence.ChartType = SeriesChartType.Line;
 
             //  Generate input and target matrices for training of ANN
             for (x = minX; x < maxX; x += trainingStepSize)
             {
-                y = Math.Sin(x); 
+                y = Math.Sin(x);
 
                 inputMatrix[0, index] = x;
                 targetMatrix[0, index] = y;
                 index++;
             }
 
-            double scale = targetMatrix.Max() - targetMatrix.Min();
-            targetMatrix = targetMatrix.Multiply(1 / scale);
-
             //  Train ANN
-            ArtificialNeuralNetwork.ArtificialNeuralNetwork ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputMatrix.Rows(), hiddenLayers, neuronsPerHiddenLayer, targetMatrix.Rows());
-            double[] errorDev = ann.Trainer.TrainAnn(inputMatrix, targetMatrix);
+            ArtificialNeuralNetwork.ArtificialNeuralNetwork myAnn = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputMatrix.Rows(), hiddenLayers, neuronsPerHiddenLayer, targetMatrix.Rows());
+
+            myAnn.Trainer.Epochs = 1000;
+            myAnn.Trainer.LearningRate = 0.001;
+            myAnn.Trainer.Epsilon = 0.0001;
+
+            double[] errorDev = myAnn.Trainer.TrainAnn(inputMatrix, targetMatrix);
 
             //  Add errors to listbox
             this.listBox1.Items.Clear();
@@ -113,23 +129,22 @@ namespace PlottingError
                 errorSequence.Points.Add(new DataPoint(i, errorDev[i]));
             }
 
-            for (x = minX; x <= maxX; x += stepSize)
+            for (x = minX; x <= maxX; x += trainingStepSize)
             {
                 //y = 2 * Math.Pow(x, 3) + 2 / scale;
                 y = Math.Sin(x);
 
-                double[] yy = ann.FeedForward(new double[] { x }).Multiply(scale);
+                yy = myAnn.FeedForward(new double[] { x });
                 outputSequence.Points.Add(new DataPoint(x, yy));
                 targetSequence.Points.Add(new DataPoint(x, y));
             }
 
             //  Plot
-            this.chart1.Series.Clear();
             this.chart1.ChartAreas.Clear();
-
             this.chart1.ChartAreas.Add(errorChart);
             this.chart1.ChartAreas.Add(outputChart);
 
+            this.chart1.Series.Clear();
             this.chart1.Series.Add(errorSequence);
             this.chart1.Series.Add(targetSequence);
             this.chart1.Series.Add(outputSequence);

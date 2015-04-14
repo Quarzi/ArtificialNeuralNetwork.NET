@@ -10,7 +10,7 @@ namespace ArtificialNeuralNetwork
 
         public double[] LastInput { get; private set; }
         public double[] LastOutput { get; private set; }
-        public ITrainer Trainer { get; set; }
+        public Trainer Trainer { get; set; }
         public List<Layer> Layers { get; set; }
 
         public bool IsAnnOkay
