@@ -86,7 +86,6 @@ namespace ArtificialNeuralNetwork
 
                     deltaWeights[layer] = deltaWeights[layer].Add(errorRate.OuterProduct(prevLayer.LastOutput.ConcatenateVector(new double[] { currentLayer.Bias })));
                     deltaBiases[layer] += errorRate.EuclideanLength();
-
                 }
 
                 //  Update weights

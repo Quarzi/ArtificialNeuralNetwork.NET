@@ -14,7 +14,7 @@
 
         public ITransfer Transfer { get; private set; }
 
-        public Layer(int numberOfNeurons, int numberOfNeuronsPrevLayer = 0, TransferFunctions tf = TransferFunctions.HyperbolicTangent, double bias = 1)
+        public Layer(int numberOfNeurons, int numberOfNeuronsPrevLayer = 0, TransferFunctions tf = TransferFunctions.Sigmoid, double bias = 1)
         {
             if (numberOfNeurons > 0)
             {
