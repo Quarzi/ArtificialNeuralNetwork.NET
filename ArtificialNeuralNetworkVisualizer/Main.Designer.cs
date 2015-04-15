@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -50,6 +50,9 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.transferFunction = new System.Windows.Forms.ComboBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.layersList = new System.Windows.Forms.ListBox();
             this.generateAnn = new System.Windows.Forms.Button();
             this.nrOutput = new System.Windows.Forms.TextBox();
             this.hiddenLayers = new System.Windows.Forms.TextBox();
@@ -59,9 +62,6 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.layersList = new System.Windows.Forms.ListBox();
-            this.label11 = new System.Windows.Forms.Label();
-            this.transferFunction = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -71,14 +71,14 @@
             // chart1
             // 
             this.chart1.BackColor = System.Drawing.SystemColors.Control;
-            chartArea5.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea5);
+            chartArea1.Name = "ChartArea1";
+            this.chart1.ChartAreas.Add(chartArea1);
             this.chart1.Location = new System.Drawing.Point(0, -2);
             this.chart1.Name = "chart1";
-            series5.ChartArea = "ChartArea1";
-            series5.Name = "Series1";
-            this.chart1.Series.Add(series5);
-            this.chart1.Size = new System.Drawing.Size(932, 573);
+            series1.ChartArea = "ChartArea1";
+            series1.Name = "Series1";
+            this.chart1.Series.Add(series1);
+            this.chart1.Size = new System.Drawing.Size(1013, 537);
             this.chart1.TabIndex = 0;
             this.chart1.Text = "chart1";
             // 
@@ -99,7 +99,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.loadDataset);
-            this.groupBox1.Location = new System.Drawing.Point(938, 334);
+            this.groupBox1.Location = new System.Drawing.Point(1019, 406);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(309, 281);
             this.groupBox1.TabIndex = 1;
@@ -238,9 +238,9 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusLabel});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 634);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 701);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1255, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(1340, 22);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -264,12 +264,39 @@
             this.groupBox2.Controls.Add(this.label9);
             this.groupBox2.Controls.Add(this.label8);
             this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Location = new System.Drawing.Point(938, 12);
+            this.groupBox2.Location = new System.Drawing.Point(1019, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(309, 316);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Artificial Neural Network";
+            // 
+            // transferFunction
+            // 
+            this.transferFunction.FormattingEnabled = true;
+            this.transferFunction.Location = new System.Drawing.Point(105, 287);
+            this.transferFunction.Name = "transferFunction";
+            this.transferFunction.Size = new System.Drawing.Size(197, 21);
+            this.transferFunction.TabIndex = 11;
+            this.transferFunction.SelectionChangeCommitted += new System.EventHandler(this.transferFunction_SelectionChangeCommitted);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(9, 290);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(90, 13);
+            this.label11.TabIndex = 10;
+            this.label11.Text = "Transfer function:";
+            // 
+            // layersList
+            // 
+            this.layersList.FormattingEnabled = true;
+            this.layersList.Location = new System.Drawing.Point(9, 147);
+            this.layersList.Name = "layersList";
+            this.layersList.Size = new System.Drawing.Size(293, 134);
+            this.layersList.TabIndex = 9;
+            this.layersList.SelectedIndexChanged += new System.EventHandler(this.layersList_SelectedIndexChanged);
             // 
             // generateAnn
             // 
@@ -345,38 +372,11 @@
             this.label7.TabIndex = 0;
             this.label7.Text = "Number of inputs:";
             // 
-            // layersList
-            // 
-            this.layersList.FormattingEnabled = true;
-            this.layersList.Location = new System.Drawing.Point(9, 147);
-            this.layersList.Name = "layersList";
-            this.layersList.Size = new System.Drawing.Size(293, 134);
-            this.layersList.TabIndex = 9;
-            this.layersList.SelectedIndexChanged += new System.EventHandler(this.layersList_SelectedIndexChanged);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(9, 290);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(90, 13);
-            this.label11.TabIndex = 10;
-            this.label11.Text = "Transfer function:";
-            // 
-            // transferFunction
-            // 
-            this.transferFunction.FormattingEnabled = true;
-            this.transferFunction.Location = new System.Drawing.Point(105, 287);
-            this.transferFunction.Name = "transferFunction";
-            this.transferFunction.Size = new System.Drawing.Size(197, 21);
-            this.transferFunction.TabIndex = 11;
-            this.transferFunction.SelectionChangeCommitted += new System.EventHandler(this.transferFunction_SelectionChangeCommitted);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1255, 656);
+            this.ClientSize = new System.Drawing.Size(1340, 723);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
