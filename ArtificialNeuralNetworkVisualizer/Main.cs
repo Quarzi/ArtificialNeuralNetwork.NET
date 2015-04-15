@@ -19,6 +19,7 @@ namespace ArtificialNeuralNetworkVisualizer
     {
         private ANN.ArtificialNeuralNetwork ann = null;
         private ANN.TrainingSet trainingSet = null;
+        private ANN.TrainingSetGenerator generator = null;
 
         public Main()
         {
@@ -28,15 +29,19 @@ namespace ArtificialNeuralNetworkVisualizer
         private void Main_Load(object sender, EventArgs e)
         {
             //  Initialize create network section
-            this.nrInputs.Text = "2";
-            this.nrOutput.Text = "1";
-            this.hiddenLayers.Text = "1";
-            this.hiddenNeurons.Text = "2";
+            this.toolStripTextBox1.Text = "2";
+            this.toolStripTextBox2.Text = "1";
+            this.toolStripTextBox2.Text = "1";
+            this.toolStripTextBox4.Text = "2";
 
             //  Initialize training section
             this.learningMethod.DataSource = Enum.GetValues(typeof(ANN.ArtificialNeuralNetwork.TrainingMethods));
             this.trainingMethod.DataSource = Enum.GetValues(typeof(ANN.Trainer.TrainingSchemes));
             this.costFunction.DataSource = Enum.GetValues(typeof(ANN.Trainer.CostFunctions));
+            this.generatorSignals.ComboBox.DataSource = Enum.GetValues(typeof(ANN.TrainingSetGenerator.Signals));
+            /// Bugged
+            this.layerTransfer.ComboBox.DataSource = Enum.GetValues(typeof(ANN.Layer.TransferFunctions));
+            ///
 
             this.learningRateCombo.Items.Clear();
             this.learningRateCombo.Items.Add(0.01);
@@ -141,39 +146,9 @@ namespace ArtificialNeuralNetworkVisualizer
 
         }
 
-        private void loadDataset_Click(object sender, EventArgs e)
-        {
-            this.trainingSet = new TrainingSet();
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-
-            openFileDialog1.InitialDirectory = "%home%";
-            openFileDialog1.Filter = "bin files (*.bin)|*.bin|All files (*.*)|*.*";
-            openFileDialog1.FilterIndex = 2;
-            openFileDialog1.RestoreDirectory = true;
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                try
-                {
-                    this.trainingSet.LoadSet(openFileDialog1.OpenFile());
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
-                }
-            }
-        }
-
         private void generateAnn_Click(object sender, EventArgs e)
         {
-            int inputs = Int32.Parse(this.nrInputs.Text),
-                hiddenLayers = Int32.Parse(this.hiddenLayers.Text),
-                neuronsPerHiddenLayer = Int32.Parse(this.hiddenNeurons.Text),
-                outputs = Int32.Parse(this.nrOutput.Text);
-
-            this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs);
-
-            this.layersList.DataSource = this.ann.Layers;
+            
         }
 
         private void layersList_SelectedIndexChanged(object sender, EventArgs e)
@@ -189,6 +164,114 @@ namespace ArtificialNeuralNetworkVisualizer
             Layer selectedLayer = (Layer)this.layersList.SelectedItem;
 
             selectedLayer.SetTransfer((Layer.TransferFunctions)(this.transferFunction.SelectedItem));
+        }
+
+        private void saveDatasetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.InitialDirectory = "%home%";
+            saveFileDialog1.Filter = "Training set files (*.set)|*.set|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 1;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    this.trainingSet.SaveSet(saveFileDialog1.OpenFile());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void loadDatasetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.trainingSet = new TrainingSet();
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
+            openFileDialog1.InitialDirectory = "%home%";
+            openFileDialog1.Filter = "Training set files (*.set)|*.set|All files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 1;
+            openFileDialog1.RestoreDirectory = true;
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    this.trainingSet.LoadSet(openFileDialog1.OpenFile());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+        }
+
+        private void createNewAnnCompatibleDatasetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (this.createNewAnnCompatibleDatasetToolStripMenuItem.Checked)
+                this.createNewAnnCompatibleDatasetToolStripMenuItem.Checked = false;
+            else
+                this.createNewAnnCompatibleDatasetToolStripMenuItem.Checked = true;
+        }
+
+        private void generateDatasetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.generator = new TrainingSetGenerator((TrainingSetGenerator.Signals)this.generatorSignals.SelectedItem);
+            this.trainingSet = this.generator.GenerateData();
+
+            if (this.createNewAnnCompatibleDatasetToolStripMenuItem.Checked)
+            {
+                this.toolStripTextBox1.Text = this.trainingSet.InputMatrix.Rows().ToString();
+                this.toolStripTextBox2.Text = this.trainingSet.TargetMatrix.Rows().ToString();
+
+                int inputs = Int32.Parse(this.toolStripTextBox1.Text),
+                    hiddenLayers = Int32.Parse(this.toolStripTextBox3.Text),
+                    neuronsPerHiddenLayer = Int32.Parse(this.toolStripTextBox4.Text),
+                    outputs = Int32.Parse(this.toolStripTextBox2.Text);
+
+                this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs, (Layer.TransferFunctions.Sigmoid));//(this.layerTransfer.SelectedItem));
+
+                this.layersList.DataSource = this.ann.Layers;
+            }
+        }
+
+        private void generateANNToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int inputs = Int32.Parse(this.toolStripTextBox1.Text),
+                hiddenLayers = Int32.Parse(this.toolStripTextBox3.Text),
+                neuronsPerHiddenLayer = Int32.Parse(this.toolStripTextBox4.Text),
+                outputs = Int32.Parse(this.toolStripTextBox2.Text);
+
+            this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs, (Layer.TransferFunctions.Sigmoid));//(this.layerTransfer.SelectedItem));
+
+            this.layersList.DataSource = this.ann.Layers;
+        }
+
+        private void layerTransfer_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void computeOutput_Click(object sender, EventArgs e)
+        {
+            string[] list = this.inputManual.Text.Split(new char[]{','});
+            double[] input = Array.ConvertAll(list, str => double.Parse(str));
+
+            double[] output = this.ann.FeedForward(input);
+
+            this.outputManual.Text = output.VectorToString();
+
+            return;
         }
     }
 }

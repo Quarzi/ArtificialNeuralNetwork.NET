@@ -42,6 +42,7 @@
     <Compile Include="DimensionMismatchException.cs" />
     <Compile Include="ExtensionMethodsDouble1D.cs" />
     <Compile Include="ExtensionMethodsDouble2D.cs" />
+    <Compile Include="ExtensionMethodsString.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -14,6 +14,7 @@ namespace ArtificialNeuralNetwork
         public double[] LastOutput { get; private set; }
         public Trainer Trainer { get; set; }
         public List<Layer> Layers { get; set; }
+        public Layer.TransferFunctions DefaultTransfer { get; set; }
 
         public bool IsAnnOkay
         {
@@ -28,8 +29,9 @@ namespace ArtificialNeuralNetwork
             }
         }
         
-        public ArtificialNeuralNetwork(int numberOfInputNeurons, int numberOfHiddenLayers, int numberOfNeuronsPerHiddenLayer, int numberOfOutputNeurons)
+        public ArtificialNeuralNetwork(int numberOfInputNeurons, int numberOfHiddenLayers, int numberOfNeuronsPerHiddenLayer, int numberOfOutputNeurons, Layer.TransferFunctions tf)
         {
+            this.DefaultTransfer = tf;
             this.InitializeNetwork(numberOfInputNeurons, numberOfHiddenLayers, numberOfNeuronsPerHiddenLayer, numberOfOutputNeurons);
         }
 
@@ -42,16 +44,16 @@ namespace ArtificialNeuralNetwork
             this.Layers = new List<Layer>();
 
             //  Initialize input layer
-            this.Layers.Add(new Layer("Input Layer", numberOfInputNeurons));
+            this.Layers.Add(new Layer("Input Layer (Neurons = " + numberOfInputNeurons.ToString() + ")", numberOfInputNeurons, 0, this.DefaultTransfer));
 
             //  Initialize hidden layers if any
             for (int i = 0; i < numberOfHiddenLayers; i++)
             {
-                this.Layers.Add(new Layer("Hidden Layer #" + (i + 1).ToString(), numberOfNeuronsPerHiddenLayer, this.Layers[i].NumberOfNeurons));
+                this.Layers.Add(new Layer("Hidden Layer #" + (i + 1).ToString() + " (Neurons = " + numberOfNeuronsPerHiddenLayer.ToString() + ")", numberOfNeuronsPerHiddenLayer, this.Layers[i].NumberOfNeurons, this.DefaultTransfer));
             }
 
             //  Initialize output layer
-            this.Layers.Add(new Layer("Output Layer", numberOfOutputNeurons, this.Layers[this.Layers.Count - 1].NumberOfNeurons));
+            this.Layers.Add(new Layer("Output Layer (Neurons = " + numberOfOutputNeurons.ToString() + ")", numberOfOutputNeurons, this.Layers[this.Layers.Count - 1].NumberOfNeurons, this.DefaultTransfer));
         }
 
         public double[] FeedForward(double[] input)
