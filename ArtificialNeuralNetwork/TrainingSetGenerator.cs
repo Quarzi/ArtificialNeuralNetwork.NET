@@ -6,7 +6,7 @@ namespace ArtificialNeuralNetwork
 {
     public class TrainingSetGenerator
     {
-        public enum Signals { OR, AND, XOR, Quadratic, Linear, Trigonometric };
+        public enum Signals { OR, AND, XOR, Quadratic, Linear, Trigonometric, Sigmoid, HyperbolicTangent };
 
         public TrainingSet TrainingSet { get; set; }
         public Signals Signal { get; private set; }
@@ -45,6 +45,12 @@ namespace ArtificialNeuralNetwork
 
                 case Signals.Trigonometric:
                     return TrigGenerator();
+                
+                case Signals.Sigmoid:
+                    return SigmoidGenerator();
+                
+                case Signals.HyperbolicTangent:
+                    return TangentGenerator();
             }
 
             return new TrainingSet();
@@ -206,7 +212,7 @@ namespace ArtificialNeuralNetwork
 
         private TrainingSet TrigGenerator()
         {
-            const double minX = -4, maxX = 4, stepSize = 0.5;
+            const double minX = -Math.PI / 2, maxX = Math.PI / 2, stepSize = Math.PI / 10;
             const int numberOfElementsInX = (int)((maxX - minX) / stepSize) + 1;
 
             TrainingSet ts = new TrainingSet();
@@ -218,6 +224,118 @@ namespace ArtificialNeuralNetwork
             {
                 ts.InputMatrix[0, index] = x;
                 ts.TargetMatrix[0, index] = 2 * Math.Sin(x) + 1;
+            }
+
+            if (this.NormalizeData)
+            {
+                //  Normalize input
+                double min = ts.InputMatrix.Min();
+
+                if (min < 0)
+                {
+                    ts.InputMatrix = ts.InputMatrix.AddElementwise(Math.Abs(min));
+                }
+                else
+                {
+                    ts.InputMatrix = ts.InputMatrix.AddElementwise(-min);
+                }
+
+                double max = ts.InputMatrix.Max();
+
+                //  ... protection against division by zero
+                if (max != 0.0) ts.InputMatrix = ts.InputMatrix.Multiply(1.0 / max);
+
+                //  Normalize output
+                min = ts.TargetMatrix.Min();
+
+                if (min < 0)
+                {
+                    ts.TargetMatrix = ts.TargetMatrix.AddElementwise(Math.Abs(min));
+                }
+                else
+                {
+                    ts.TargetMatrix = ts.TargetMatrix.AddElementwise(-min);
+                }
+
+                max = ts.TargetMatrix.Max();
+
+                //  ... protection against division by zero
+                if (max != 0.0) ts.TargetMatrix = ts.TargetMatrix.Multiply(1.0 / max);
+            }
+
+            return ts;
+        }
+
+        private TrainingSet SigmoidGenerator()
+        {
+            const double minX = -4, maxX = 4, stepSize = 0.5;
+            const int numberOfElementsInX = (int)((maxX - minX) / stepSize) + 1;
+
+            TrainingSet ts = new TrainingSet();
+            ts.InputMatrix = new double[1, numberOfElementsInX].Zeros();
+            ts.TargetMatrix = new double[1, numberOfElementsInX].Zeros();
+
+            int index = 0;
+            for (double x = minX; x <= maxX; x += stepSize, index++)
+            {
+                ts.InputMatrix[0, index] = x;
+                ts.TargetMatrix[0, index] = 1 / (1 + Math.Exp(-x));
+            }
+
+            if (this.NormalizeData)
+            {
+                //  Normalize input
+                double min = ts.InputMatrix.Min();
+
+                if (min < 0)
+                {
+                    ts.InputMatrix = ts.InputMatrix.AddElementwise(Math.Abs(min));
+                }
+                else
+                {
+                    ts.InputMatrix = ts.InputMatrix.AddElementwise(-min);
+                }
+
+                double max = ts.InputMatrix.Max();
+
+                //  ... protection against division by zero
+                if (max != 0.0) ts.InputMatrix = ts.InputMatrix.Multiply(1.0 / max);
+
+                //  Normalize output
+                min = ts.TargetMatrix.Min();
+
+                if (min < 0)
+                {
+                    ts.TargetMatrix = ts.TargetMatrix.AddElementwise(Math.Abs(min));
+                }
+                else
+                {
+                    ts.TargetMatrix = ts.TargetMatrix.AddElementwise(-min);
+                }
+
+                max = ts.TargetMatrix.Max();
+
+                //  ... protection against division by zero
+                if (max != 0.0) ts.TargetMatrix = ts.TargetMatrix.Multiply(1.0 / max);
+            }
+
+            return ts;
+        }
+
+        private TrainingSet TangentGenerator()
+        {
+            const double minX = -4, maxX = 4, stepSize = 0.5;
+            const int numberOfElementsInX = (int)((maxX - minX) / stepSize) + 1;
+
+            TrainingSet ts = new TrainingSet();
+            ts.InputMatrix = new double[1, numberOfElementsInX].Zeros();
+            ts.TargetMatrix = new double[1, numberOfElementsInX].Zeros();
+
+            int index = 0;
+            for (double x = minX; x <= maxX; x += stepSize, index++)
+            {
+                ts.InputMatrix[0, index] = x;
+                ts.TargetMatrix[0, index] = (Math.Exp(2 * x) - 1) / (Math.Exp(2 * x) + 1);
             }
 
             if (this.NormalizeData)

@@ -18,7 +18,7 @@ namespace ArtificialNeuralNetwork
         public ITransfer Transfer { get; private set; }
         public TransferFunctions TransferFunction { get; private set; }
 
-        public Layer(string name, int numberOfNeurons, int numberOfNeuronsPrevLayer = 0, TransferFunctions tf = TransferFunctions.Sigmoid, double bias = 1)
+        public Layer(string name, int numberOfNeurons, int numberOfNeuronsPrevLayer = 0, TransferFunctions tf = TransferFunctions.Sigmoid, double bias = -1)
         {
             this.Text = name;
 
