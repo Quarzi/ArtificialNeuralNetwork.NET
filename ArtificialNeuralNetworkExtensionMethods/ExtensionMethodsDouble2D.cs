@@ -48,15 +48,30 @@ namespace ArtificialNeuralNetwork.Extensions
             {
                 for (int j = 0; j < me.Cols(); j++)
                 {
-                    double value = rand.NextDouble() * maxValue;
+                    double value = rand.NextDouble();// *maxValue;
 
-                    if (rand.Next(2) == 0) value *= -1;
+                    //if (rand.Next(2) == 0) value *= -1;
 
                     me[i, j] = value;
                 }
             }
 
             return me;
+        }
+
+        public static double[,] AddElementwise(this double[,] lhs, double rhs)
+        {
+            double[,] result = new double[lhs.Rows(), lhs.Cols()].Zeros();
+
+            for (int i = 0; i < lhs.Rows(); i++)
+            {
+                for (int j = 0; j < lhs.Cols(); j++)
+                {
+                    result[i, j] = lhs[i, j] + rhs;
+                }
+            }
+
+            return result;
         }
 
         public static double[,] Add(this double[,] lhs, double[,] rhs)
@@ -185,7 +200,7 @@ namespace ArtificialNeuralNetwork.Extensions
 
                 for (int i = 0; i < result.Rows(); i++)
                 {
-                    result[i,j] = me[i, k];                    
+                    result[i, j] = me[i, k];
                 }
             }
 
@@ -230,7 +245,7 @@ namespace ArtificialNeuralNetwork.Extensions
             {
                 for (int j = 0; j < me.Cols(); j++)
                 {
-                    if (me[i,j] > output) output = me[i,j];
+                    if (me[i, j] > output) output = me[i, j];
                 }
             }
 

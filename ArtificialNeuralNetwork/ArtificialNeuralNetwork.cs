@@ -44,16 +44,16 @@ namespace ArtificialNeuralNetwork
             this.Layers = new List<Layer>();
 
             //  Initialize input layer
-            this.Layers.Add(new Layer("Input Layer (Neurons = " + numberOfInputNeurons.ToString() + ")", numberOfInputNeurons, 0, this.DefaultTransfer));
+            this.Layers.Add(new Layer("Input Layer (Neurons = " + numberOfInputNeurons.ToString() + " + 1)", numberOfInputNeurons, 0, this.DefaultTransfer));
 
             //  Initialize hidden layers if any
             for (int i = 0; i < numberOfHiddenLayers; i++)
             {
-                this.Layers.Add(new Layer("Hidden Layer #" + (i + 1).ToString() + " (Neurons = " + numberOfNeuronsPerHiddenLayer.ToString() + ")", numberOfNeuronsPerHiddenLayer, this.Layers[i].NumberOfNeurons, this.DefaultTransfer));
+                this.Layers.Add(new Layer("Hidden Layer #" + (i + 1).ToString() + " (Neurons = " + numberOfNeuronsPerHiddenLayer.ToString() + " + 1)", numberOfNeuronsPerHiddenLayer, this.Layers[i].NumberOfNeurons, this.DefaultTransfer));
             }
 
             //  Initialize output layer
-            this.Layers.Add(new Layer("Output Layer (Neurons = " + numberOfOutputNeurons.ToString() + ")", numberOfOutputNeurons, this.Layers[this.Layers.Count - 1].NumberOfNeurons, this.DefaultTransfer));
+            this.Layers.Add(new Layer("Output Layer (Neurons = " + numberOfOutputNeurons.ToString() + " + 1)", numberOfOutputNeurons, this.Layers[this.Layers.Count - 1].NumberOfNeurons, this.DefaultTransfer));
         }
 
         public double[] FeedForward(double[] input)

@@ -102,6 +102,8 @@ namespace ArtificialNeuralNetworkVisualizer
                 targetSequence.Legend = "Legend";
                 targetSequence.LegendText = "Target";
                 targetSequence.Color = Color.Green;
+                targetSequence.MarkerStyle = MarkerStyle.Circle;
+                targetSequence.MarkerSize = 10;
                 targetSequence.ChartType = SeriesChartType.Line;
 
                 outputSequence.ChartArea = outputChart.Name;
