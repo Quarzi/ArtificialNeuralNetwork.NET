@@ -18,7 +18,7 @@ namespace ArtificialNeuralNetworkVisualizer
 {
     public partial class Main : Form
     {
-        private Stopwatch stopWatch;
+        private List<Series> historyList = null;
 
         private ANN.ArtificialNeuralNetwork ann = null;
         private ANN.TrainingSet trainingSet = null;
@@ -42,9 +42,7 @@ namespace ArtificialNeuralNetworkVisualizer
             this.trainingMethod.DataSource = Enum.GetValues(typeof(ANN.Trainer.TrainingSchemes));
             this.costFunction.DataSource = Enum.GetValues(typeof(ANN.Trainer.CostFunctions));
             this.generatorSignals.ComboBox.DataSource = Enum.GetValues(typeof(ANN.TrainingSetGenerator.Signals));
-            /// Bugged
             this.layerTransfer.ComboBox.DataSource = Enum.GetValues(typeof(ANN.Layer.TransferFunctions));
-            ///
 
             this.learningRateCombo.Items.Clear();
             this.learningRateCombo.Items.Add(0.01);
@@ -56,9 +54,10 @@ namespace ArtificialNeuralNetworkVisualizer
             this.learningRateCombo.Items.Add(0.7);
             this.learningRateCombo.Items.Add(1.0);
 
-            this.learningRateCombo.SelectedIndex = 0;
-            this.epochsValue.Text = "10000";
-            this.epsilonValue.Text = "0.00000000001";
+            this.learningRateCombo.SelectedIndex = 3;
+            this.layerTransfer.ComboBox.SelectedIndex = 1;
+            this.epochsValue.Text = "100";
+            this.epsilonValue.Text = "0.000000001";
         }
 
         private void learningRateCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -69,7 +68,7 @@ namespace ArtificialNeuralNetworkVisualizer
         private void trainAnn_Click(object sender, EventArgs e)
         {
             //  Start timer
-            this.backgroundWorker1.RunWorkerAsync();
+            //this.backgroundWorker1.RunWorkerAsync();
 
             //  Check if training set is loaded
             if (this.ann != null && this.trainingSet != null && this.trainingSet.InputMatrix.Rows() == this.ann.Layers[0].NumberOfNeurons && this.trainingSet.TargetMatrix.Rows() == this.ann.Layers[this.ann.Layers.Count - 1].NumberOfNeurons)
@@ -90,7 +89,7 @@ namespace ArtificialNeuralNetworkVisualizer
                 //  Setup visualization of data
                 Legend legend = new Legend("Legend");
                 ChartArea errorChart = new ChartArea("ErrorChart"), outputChart = new ChartArea("OutputChart");
-                Series errorSequence = new Series("Errors"), targetSequence = new Series("Target"), outputSequence = new Series("Output");
+                Series errorSequence = new Series("Errors"), targetSequence = new Series("Target"), outputSequence = new Series("Output"), history;
 
                 errorChart.AxisX.Title = "Epochs";
                 errorChart.AxisY.Title = "Cost";
@@ -116,6 +115,7 @@ namespace ArtificialNeuralNetworkVisualizer
                 outputSequence.Legend = "Legend";
                 outputSequence.LegendText = "Output";
                 outputSequence.Color = Color.Red;
+                outputSequence.BorderWidth = 2;
                 outputSequence.ChartType = SeriesChartType.Line;
 
                 //  Get error over epochs
@@ -143,8 +143,29 @@ namespace ArtificialNeuralNetworkVisualizer
                 this.chart1.ChartAreas.Add(outputChart);
 
                 this.chart1.Series.Add(errorSequence);
+
+                foreach (var item in this.historyList)
+                {
+                    this.chart1.Series.Add(item);
+                }
+
                 this.chart1.Series.Add(targetSequence);
                 this.chart1.Series.Add(outputSequence);
+
+                //  Create history series
+                //history = new Series();
+                //history.ChartArea = outputChart.Name;
+                //history.Color = Color.Gray;
+                //history.IsVisibleInLegend = false;
+                //history.ChartType = SeriesChartType.Line;
+                //history.BorderWidth = 1;
+                
+                //foreach (var item in outputSequence.Points)
+                //{
+                //    history.Points.Add(item);
+                //}
+
+                //this.historyList.Add(history);
             }
             else
             {
@@ -165,6 +186,8 @@ namespace ArtificialNeuralNetworkVisualizer
 
             this.transferFunction.DataSource = Enum.GetValues(typeof(ANN.Layer.TransferFunctions));
             this.transferFunction.SelectedIndex = (int)selectedLayer.TransferFunction;
+
+            this.nrNeuronsInLayer.Text = selectedLayer.NumberOfNeurons.ToString();
         }
 
         private void transferFunction_SelectionChangeCommitted(object sender, EventArgs e)
@@ -234,6 +257,7 @@ namespace ArtificialNeuralNetworkVisualizer
 
         private void generateDatasetToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            this.historyList = new List<Series>();
             this.generator = new TrainingSetGenerator((TrainingSetGenerator.Signals)this.generatorSignals.SelectedItem);
             this.trainingSet = this.generator.GenerateData();
 
@@ -260,6 +284,7 @@ namespace ArtificialNeuralNetworkVisualizer
                 neuronsPerHiddenLayer = Int32.Parse(this.toolStripTextBox4.Text),
                 outputs = Int32.Parse(this.toolStripTextBox2.Text);
 
+            this.historyList = new List<Series>();
             this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs, (Layer.TransferFunctions)this.layerTransfer.ComboBox.SelectedItem);
 
             this.layersList.DataSource = this.ann.Layers;
@@ -305,6 +330,24 @@ namespace ArtificialNeuralNetworkVisualizer
 
             e.Cancel = true;
             return;
+        }
+
+        private void setNeurons_Click(object sender, EventArgs e)
+        {
+            Layer selectedLayer = (Layer)this.layersList.SelectedItem;
+            int neurons = Int32.Parse(this.nrNeuronsInLayer.Text), index = selectedLayer.Text.IndexOf('(');
+
+            selectedLayer.SetNumberOfNeurons(neurons);
+            if (selectedLayer.NextLayer != null) selectedLayer.NextLayer.SetNumberOfInputNeurons(neurons);
+            selectedLayer.Text = selectedLayer.Text.Substring(0, index) + "(Neurons = " + neurons + " + 1)";
+
+            //this.layersList.Refresh();
+            this.layersList.DataSource = this.ann.Layers;
+        }
+
+        private void copyOutput_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(this.outputManual.Text);
         }
     }
 }

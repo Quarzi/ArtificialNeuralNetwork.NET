@@ -4,13 +4,15 @@ namespace ArtificialNeuralNetwork
 {
     public class Layer
     {
-        public enum TransferFunctions { Sigmoid, HyperbolicTangent };
+        public enum TransferFunctions { Bypass, Sigmoid, HyperbolicTangent };
 
         public double Bias { get; set; }
         public double[,] Weights { get; set; }
-        public int NumberOfInputNeurons { get; private set; }
-        public int NumberOfNeurons { get; private set; }
-        public bool PassThrough { get; private set; }
+        public Layer PreviousLayer { get; private set; }
+        public Layer NextLayer { get; set; }
+        //public int NumberOfInputNeurons { get; private set; }   //  Before summation (Previous layer)
+        public int NumberOfNeurons { get; private set; }        //  After summation
+
         public double[] BeforeTransfer { get; private set; }
         public double[] LastOutput { get; private set; }
         public string Text { get; set; }
@@ -18,33 +20,23 @@ namespace ArtificialNeuralNetwork
         public ITransfer Transfer { get; private set; }
         public TransferFunctions TransferFunction { get; private set; }
 
-        public Layer(string name, int numberOfNeurons, int numberOfNeuronsPrevLayer = 0, TransferFunctions tf = TransferFunctions.Sigmoid, double bias = -1)
+        public Layer(string name, int numberOfNeurons, Layer previousLayer = null, TransferFunctions tf = TransferFunctions.Sigmoid, double bias = -1)
         {
             this.Text = name;
+            this.TransferFunction = tf;
+            this.NumberOfNeurons = numberOfNeurons;     //  Excluding bias-neuron
+            this.BeforeTransfer = new double[numberOfNeurons].Zeros();
+            this.LastOutput = new double[numberOfNeurons].Zeros();
+            this.PreviousLayer = previousLayer;
+            this.NextLayer = null;
+            this.Bias = bias;
 
             if (numberOfNeurons > 0)
             {
-                this.NumberOfNeurons = numberOfNeurons;     //  Excluding bias-neuron
-                this.LastOutput = new double[numberOfNeurons];
-                this.Bias = 1;
-
-                //  Determine if it is a input layer or not
-                if (numberOfNeuronsPrevLayer == 0)
-                {
-                    this.PassThrough = true;                //  Input is passed through layer not affected by weighting and transfer function (Utilized as input layer)
-                }
-                else
-                {
-                    this.PassThrough = false;
-                    this.NumberOfInputNeurons = numberOfNeuronsPrevLayer + 1;   //  Accounting for bias neuron in previous layer
-                    this.Weights = new double[NumberOfNeurons, numberOfNeuronsPrevLayer + 1].Randomize(2);   //  ... + 1 Accounts for the bias neuron from previous layer
-                    this.BeforeTransfer = new double[1].Zeros();
-                }
-
-                //  Select transfer
-                this.TransferFunction = tf;
                 switch (tf)
                 {
+                    case TransferFunctions.Bypass:
+                        return;
                     case TransferFunctions.Sigmoid:
                         this.Transfer = new Sigmoid();
                         break;
@@ -52,6 +44,8 @@ namespace ArtificialNeuralNetwork
                         this.Transfer = new HyperbolicTangent();
                         break;
                 }
+
+                this.Weights = new double[NumberOfNeurons, previousLayer.NumberOfNeurons + 1].Randomize();   //  ... + 1 Accounts for the bias neuron from previous layer [0.0 -> 1.0]
             }
         }
 
@@ -65,9 +59,17 @@ namespace ArtificialNeuralNetwork
             double[] output = new double[this.NumberOfNeurons].Zeros();
 
             //  Calculate output
-            if (this.PassThrough)
+            if (this.TransferFunction == TransferFunctions.Bypass)
             {
-                input.CopyTo(output, 0);
+                try
+                {
+                    input.CopyTo(output, 0);
+                }
+                catch (System.Exception)
+                {
+                    
+                    throw;
+                }
             }
             else
             {
@@ -89,6 +91,8 @@ namespace ArtificialNeuralNetwork
 
         public void SetTransfer (TransferFunctions tf)
         {
+            if (this.TransferFunction == TransferFunctions.Bypass || tf == TransferFunctions.Bypass) return;
+
             this.TransferFunction = tf;
             switch (tf)
             {
@@ -98,6 +102,27 @@ namespace ArtificialNeuralNetwork
                 case TransferFunctions.HyperbolicTangent:
                     this.Transfer = new HyperbolicTangent();
                     break;
+            }
+        }
+
+        public void SetNumberOfNeurons(int nrNeurons)
+        {
+            if (this.NumberOfNeurons != nrNeurons && nrNeurons > 0)
+            {
+                this.NumberOfNeurons = nrNeurons;
+                this.BeforeTransfer = new double[nrNeurons].Zeros();
+                this.LastOutput = new double[nrNeurons].Zeros();
+                this.Weights = new double[nrNeurons, this.PreviousLayer.NumberOfNeurons + 1].Randomize();   //   [0.0 -> 1.0]
+            }
+        }
+
+        public void SetNumberOfInputNeurons(int nrNeurons)
+        {
+            if (this.PreviousLayer.NumberOfNeurons != nrNeurons && nrNeurons > 0)
+            {
+                this.BeforeTransfer = new double[nrNeurons].Zeros();
+                this.LastOutput = new double[nrNeurons].Zeros();
+                this.Weights = new double[this.NumberOfNeurons, nrNeurons + 1].Randomize();   //   [0.0 -> 1.0]
             }
         }
     }

@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CopyObjectInstance.cs" />
     <Compile Include="DimensionMismatchException.cs" />
     <Compile Include="ExtensionMethodsDouble1D.cs" />
     <Compile Include="ExtensionMethodsDouble2D.cs" />

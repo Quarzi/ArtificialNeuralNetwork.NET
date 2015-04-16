@@ -48,8 +48,13 @@
             this.label1 = new System.Windows.Forms.Label();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timeElapsed = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.setNeurons = new System.Windows.Forms.Button();
+            this.nrNeuronsInLayer = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.copyOutput = new System.Windows.Forms.Button();
             this.computeOutput = new System.Windows.Forms.Button();
             this.outputManual = new System.Windows.Forms.TextBox();
             this.inputManual = new System.Windows.Forms.TextBox();
@@ -65,6 +70,10 @@
             this.saveDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createNewAnnCompatibleDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generateDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generateANNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.generatorSignals = new System.Windows.Forms.ToolStripComboBox();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,12 +86,7 @@
             this.toolStripTextBox3 = new System.Windows.Forms.ToolStripTextBox();
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox4 = new System.Windows.Forms.ToolStripTextBox();
-            this.generatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createNewAnnCompatibleDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generateDatasetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.generateANNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.timeElapsed = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -121,7 +125,7 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(1019, 346);
+            this.groupBox1.Location = new System.Drawing.Point(1019, 374);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(309, 218);
             this.groupBox1.TabIndex = 1;
@@ -168,7 +172,7 @@
             this.trainAnn.Name = "trainAnn";
             this.trainAnn.Size = new System.Drawing.Size(94, 46);
             this.trainAnn.TabIndex = 10;
-            this.trainAnn.Text = "Train ANN";
+            this.trainAnn.Text = "Train ANN (Step)";
             this.trainAnn.UseVisualStyleBackColor = true;
             this.trainAnn.Click += new System.EventHandler(this.trainAnn_Click);
             // 
@@ -240,11 +244,11 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(49, 157);
+            this.label1.Location = new System.Drawing.Point(17, 157);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(46, 13);
+            this.label1.Size = new System.Drawing.Size(78, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "Epochs:";
+            this.label1.Text = "Epochs/Steps:";
             // 
             // statusStrip1
             // 
@@ -263,8 +267,17 @@
             this.statusLabel.Size = new System.Drawing.Size(253, 17);
             this.statusLabel.Text = "Tip of the day: Artificial Neural Network (ANN)";
             // 
+            // timeElapsed
+            // 
+            this.timeElapsed.Name = "timeElapsed";
+            this.timeElapsed.Size = new System.Drawing.Size(326, 17);
+            this.timeElapsed.Text = " - Written by: Kent Stark Olsen (kent.stark.olsen@gmail.com)";
+            // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.setNeurons);
+            this.groupBox2.Controls.Add(this.nrNeuronsInLayer);
+            this.groupBox2.Controls.Add(this.label10);
             this.groupBox2.Controls.Add(this.groupBox3);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.transferFunction);
@@ -272,30 +285,68 @@
             this.groupBox2.Controls.Add(this.layersList);
             this.groupBox2.Location = new System.Drawing.Point(1019, 38);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(309, 302);
+            this.groupBox2.Size = new System.Drawing.Size(309, 330);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Artificial Neural Network";
             // 
+            // setNeurons
+            // 
+            this.setNeurons.Enabled = false;
+            this.setNeurons.Location = new System.Drawing.Point(234, 198);
+            this.setNeurons.Name = "setNeurons";
+            this.setNeurons.Size = new System.Drawing.Size(69, 23);
+            this.setNeurons.TabIndex = 16;
+            this.setNeurons.Text = "Set";
+            this.setNeurons.UseVisualStyleBackColor = true;
+            this.setNeurons.Click += new System.EventHandler(this.setNeurons_Click);
+            // 
+            // nrNeuronsInLayer
+            // 
+            this.nrNeuronsInLayer.Location = new System.Drawing.Point(128, 200);
+            this.nrNeuronsInLayer.Name = "nrNeuronsInLayer";
+            this.nrNeuronsInLayer.Size = new System.Drawing.Size(100, 20);
+            this.nrNeuronsInLayer.TabIndex = 15;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(22, 203);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(100, 13);
+            this.label10.TabIndex = 14;
+            this.label10.Text = "Number of neurons:";
+            // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.copyOutput);
             this.groupBox3.Controls.Add(this.computeOutput);
             this.groupBox3.Controls.Add(this.outputManual);
             this.groupBox3.Controls.Add(this.inputManual);
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.label8);
-            this.groupBox3.Location = new System.Drawing.Point(9, 199);
+            this.groupBox3.Location = new System.Drawing.Point(9, 227);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(294, 97);
             this.groupBox3.TabIndex = 13;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Manual feed-forward";
             // 
+            // copyOutput
+            // 
+            this.copyOutput.Location = new System.Drawing.Point(6, 66);
+            this.copyOutput.Name = "copyOutput";
+            this.copyOutput.Size = new System.Drawing.Size(76, 23);
+            this.copyOutput.TabIndex = 5;
+            this.copyOutput.Text = "Copy output";
+            this.copyOutput.UseVisualStyleBackColor = true;
+            this.copyOutput.Click += new System.EventHandler(this.copyOutput_Click);
+            // 
             // computeOutput
             // 
-            this.computeOutput.Location = new System.Drawing.Point(6, 66);
+            this.computeOutput.Location = new System.Drawing.Point(88, 66);
             this.computeOutput.Name = "computeOutput";
-            this.computeOutput.Size = new System.Drawing.Size(282, 23);
+            this.computeOutput.Size = new System.Drawing.Size(200, 23);
             this.computeOutput.TabIndex = 4;
             this.computeOutput.Text = "Compute Output";
             this.computeOutput.UseVisualStyleBackColor = true;
@@ -429,6 +480,39 @@
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
+            // generatorToolStripMenuItem
+            // 
+            this.generatorToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.createNewAnnCompatibleDatasetToolStripMenuItem,
+            this.generateDatasetToolStripMenuItem,
+            this.generateANNToolStripMenuItem});
+            this.generatorToolStripMenuItem.Name = "generatorToolStripMenuItem";
+            this.generatorToolStripMenuItem.Size = new System.Drawing.Size(71, 23);
+            this.generatorToolStripMenuItem.Text = "Generator";
+            // 
+            // createNewAnnCompatibleDatasetToolStripMenuItem
+            // 
+            this.createNewAnnCompatibleDatasetToolStripMenuItem.Checked = true;
+            this.createNewAnnCompatibleDatasetToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.createNewAnnCompatibleDatasetToolStripMenuItem.Name = "createNewAnnCompatibleDatasetToolStripMenuItem";
+            this.createNewAnnCompatibleDatasetToolStripMenuItem.Size = new System.Drawing.Size(364, 22);
+            this.createNewAnnCompatibleDatasetToolStripMenuItem.Text = "Create new ANN when training set is generated/loaded";
+            this.createNewAnnCompatibleDatasetToolStripMenuItem.Click += new System.EventHandler(this.createNewAnnCompatibleDatasetToolStripMenuItem_Click);
+            // 
+            // generateDatasetToolStripMenuItem
+            // 
+            this.generateDatasetToolStripMenuItem.Name = "generateDatasetToolStripMenuItem";
+            this.generateDatasetToolStripMenuItem.Size = new System.Drawing.Size(364, 22);
+            this.generateDatasetToolStripMenuItem.Text = "Generate training set";
+            this.generateDatasetToolStripMenuItem.Click += new System.EventHandler(this.generateDatasetToolStripMenuItem_Click);
+            // 
+            // generateANNToolStripMenuItem
+            // 
+            this.generateANNToolStripMenuItem.Name = "generateANNToolStripMenuItem";
+            this.generateANNToolStripMenuItem.Size = new System.Drawing.Size(364, 22);
+            this.generateANNToolStripMenuItem.Text = "Generate ANN";
+            this.generateANNToolStripMenuItem.Click += new System.EventHandler(this.generateANNToolStripMenuItem_Click);
+            // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Enabled = false;
@@ -509,48 +593,9 @@
             this.toolStripTextBox4.Text = "2";
             this.toolStripTextBox4.ToolTipText = "Number of neurons per hidden layer";
             // 
-            // generatorToolStripMenuItem
-            // 
-            this.generatorToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.createNewAnnCompatibleDatasetToolStripMenuItem,
-            this.generateDatasetToolStripMenuItem,
-            this.generateANNToolStripMenuItem});
-            this.generatorToolStripMenuItem.Name = "generatorToolStripMenuItem";
-            this.generatorToolStripMenuItem.Size = new System.Drawing.Size(71, 23);
-            this.generatorToolStripMenuItem.Text = "Generator";
-            // 
-            // createNewAnnCompatibleDatasetToolStripMenuItem
-            // 
-            this.createNewAnnCompatibleDatasetToolStripMenuItem.Checked = true;
-            this.createNewAnnCompatibleDatasetToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.createNewAnnCompatibleDatasetToolStripMenuItem.Name = "createNewAnnCompatibleDatasetToolStripMenuItem";
-            this.createNewAnnCompatibleDatasetToolStripMenuItem.Size = new System.Drawing.Size(364, 22);
-            this.createNewAnnCompatibleDatasetToolStripMenuItem.Text = "Create new ANN when training set is generated/loaded";
-            this.createNewAnnCompatibleDatasetToolStripMenuItem.Click += new System.EventHandler(this.createNewAnnCompatibleDatasetToolStripMenuItem_Click);
-            // 
-            // generateDatasetToolStripMenuItem
-            // 
-            this.generateDatasetToolStripMenuItem.Name = "generateDatasetToolStripMenuItem";
-            this.generateDatasetToolStripMenuItem.Size = new System.Drawing.Size(364, 22);
-            this.generateDatasetToolStripMenuItem.Text = "Generate training set";
-            this.generateDatasetToolStripMenuItem.Click += new System.EventHandler(this.generateDatasetToolStripMenuItem_Click);
-            // 
-            // generateANNToolStripMenuItem
-            // 
-            this.generateANNToolStripMenuItem.Name = "generateANNToolStripMenuItem";
-            this.generateANNToolStripMenuItem.Size = new System.Drawing.Size(364, 22);
-            this.generateANNToolStripMenuItem.Text = "Generate ANN";
-            this.generateANNToolStripMenuItem.Click += new System.EventHandler(this.generateANNToolStripMenuItem_Click);
-            // 
             // backgroundWorker1
             // 
             this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            // 
-            // timeElapsed
-            // 
-            this.timeElapsed.Name = "timeElapsed";
-            this.timeElapsed.Size = new System.Drawing.Size(326, 17);
-            this.timeElapsed.Text = " - Written by: Kent Stark Olsen (kent.stark.olsen@gmail.com)";
             // 
             // Main
             // 
@@ -638,6 +683,10 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
         private System.Windows.Forms.ToolStripStatusLabel timeElapsed;
+        private System.Windows.Forms.Button setNeurons;
+        private System.Windows.Forms.TextBox nrNeuronsInLayer;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button copyOutput;
     }
 }
 
