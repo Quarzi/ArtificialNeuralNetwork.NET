@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Diagnostics;
 
 using ArtificialNeuralNetwork;
 using ArtificialNeuralNetwork.Extensions;
@@ -17,6 +18,8 @@ namespace ArtificialNeuralNetworkVisualizer
 {
     public partial class Main : Form
     {
+        private Stopwatch stopWatch;
+
         private ANN.ArtificialNeuralNetwork ann = null;
         private ANN.TrainingSet trainingSet = null;
         private ANN.TrainingSetGenerator generator = null;
@@ -53,9 +56,9 @@ namespace ArtificialNeuralNetworkVisualizer
             this.learningRateCombo.Items.Add(0.7);
             this.learningRateCombo.Items.Add(1.0);
 
-            this.learningRateCombo.SelectedIndex = 2;
-            this.epochsValue.Text = "500";
-            this.epsilonValue.Text = "0.001";
+            this.learningRateCombo.SelectedIndex = 0;
+            this.epochsValue.Text = "10000";
+            this.epsilonValue.Text = "0.00000000001";
         }
 
         private void learningRateCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -65,6 +68,9 @@ namespace ArtificialNeuralNetworkVisualizer
 
         private void trainAnn_Click(object sender, EventArgs e)
         {
+            //  Start timer
+            this.backgroundWorker1.RunWorkerAsync();
+
             //  Check if training set is loaded
             if (this.ann != null && this.trainingSet != null && this.trainingSet.InputMatrix.Rows() == this.ann.Layers[0].NumberOfNeurons && this.trainingSet.TargetMatrix.Rows() == this.ann.Layers[this.ann.Layers.Count - 1].NumberOfNeurons)
             {
@@ -145,12 +151,12 @@ namespace ArtificialNeuralNetworkVisualizer
                 MessageBox.Show("No artificial neural network was created nor the dimensions of it are compatible with the trainingset. Is dataset loaded? Training stopped!", "Error");
             }
 
-
+            //this.backgroundWorker1.CancelAsync();
         }
 
         private void generateAnn_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void layersList_SelectedIndexChanged(object sender, EventArgs e)
@@ -241,7 +247,7 @@ namespace ArtificialNeuralNetworkVisualizer
                     neuronsPerHiddenLayer = Int32.Parse(this.toolStripTextBox4.Text),
                     outputs = Int32.Parse(this.toolStripTextBox2.Text);
 
-                this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs, (Layer.TransferFunctions.Sigmoid));//(this.layerTransfer.SelectedItem));
+                this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs, (Layer.TransferFunctions)this.layerTransfer.ComboBox.SelectedItem);
 
                 this.layersList.DataSource = this.ann.Layers;
             }
@@ -254,7 +260,7 @@ namespace ArtificialNeuralNetworkVisualizer
                 neuronsPerHiddenLayer = Int32.Parse(this.toolStripTextBox4.Text),
                 outputs = Int32.Parse(this.toolStripTextBox2.Text);
 
-            this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs, (Layer.TransferFunctions.Sigmoid));//(this.layerTransfer.SelectedItem));
+            this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs, (Layer.TransferFunctions)this.layerTransfer.ComboBox.SelectedItem);
 
             this.layersList.DataSource = this.ann.Layers;
         }
@@ -266,13 +272,38 @@ namespace ArtificialNeuralNetworkVisualizer
 
         private void computeOutput_Click(object sender, EventArgs e)
         {
-            string[] list = this.inputManual.Text.Split(new char[]{','});
+            string[] list = this.inputManual.Text.Split(new char[] { ',' });
             double[] input = Array.ConvertAll(list, str => double.Parse(str));
 
             double[] output = this.ann.FeedForward(input);
 
             this.outputManual.Text = output.VectorToString();
 
+            return;
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            long msTimeElapsed = 0, current;
+            long interval = 10;
+
+            while (!this.backgroundWorker1.CancellationPending)
+            {
+                current = stopWatch.ElapsedMilliseconds;
+                interval -= current + msTimeElapsed;
+                msTimeElapsed = current;
+
+                if (interval <= 0)
+                {
+                    interval = 10;
+
+                    this.timeElapsed.Text = msTimeElapsed.ToString();
+                }
+            }
+
+            e.Cancel = true;
             return;
         }
     }
