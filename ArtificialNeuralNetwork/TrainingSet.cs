@@ -20,6 +20,13 @@ namespace ArtificialNeuralNetwork
             }
         }
 
+        public void SaveSet(Stream file)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            formatter.Serialize(file, this);
+            file.Close();
+        }
+
         public TrainingSet LoadSet(string filename)
         {
             BinaryFormatter formatter = new BinaryFormatter();

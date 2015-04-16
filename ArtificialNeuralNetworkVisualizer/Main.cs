@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Diagnostics;
 
 using ArtificialNeuralNetwork;
 using ArtificialNeuralNetwork.Extensions;
@@ -17,8 +18,11 @@ namespace ArtificialNeuralNetworkVisualizer
 {
     public partial class Main : Form
     {
+        private List<Series> historyList = null;
+
         private ANN.ArtificialNeuralNetwork ann = null;
         private ANN.TrainingSet trainingSet = null;
+        private ANN.TrainingSetGenerator generator = null;
 
         public Main()
         {
@@ -28,15 +32,17 @@ namespace ArtificialNeuralNetworkVisualizer
         private void Main_Load(object sender, EventArgs e)
         {
             //  Initialize create network section
-            this.nrInputs.Text = "2";
-            this.nrOutput.Text = "1";
-            this.hiddenLayers.Text = "1";
-            this.hiddenNeurons.Text = "2";
+            this.toolStripTextBox1.Text = "2";
+            this.toolStripTextBox2.Text = "1";
+            this.toolStripTextBox2.Text = "1";
+            this.toolStripTextBox4.Text = "2";
 
             //  Initialize training section
             this.learningMethod.DataSource = Enum.GetValues(typeof(ANN.ArtificialNeuralNetwork.TrainingMethods));
             this.trainingMethod.DataSource = Enum.GetValues(typeof(ANN.Trainer.TrainingSchemes));
             this.costFunction.DataSource = Enum.GetValues(typeof(ANN.Trainer.CostFunctions));
+            this.generatorSignals.ComboBox.DataSource = Enum.GetValues(typeof(ANN.TrainingSetGenerator.Signals));
+            this.layerTransfer.ComboBox.DataSource = Enum.GetValues(typeof(ANN.Layer.TransferFunctions));
 
             this.learningRateCombo.Items.Clear();
             this.learningRateCombo.Items.Add(0.01);
@@ -48,9 +54,10 @@ namespace ArtificialNeuralNetworkVisualizer
             this.learningRateCombo.Items.Add(0.7);
             this.learningRateCombo.Items.Add(1.0);
 
-            this.learningRateCombo.SelectedIndex = 2;
-            this.epochsValue.Text = "500";
-            this.epsilonValue.Text = "0.001";
+            this.learningRateCombo.SelectedIndex = 3;
+            this.layerTransfer.ComboBox.SelectedIndex = 1;
+            this.epochsValue.Text = "100";
+            this.epsilonValue.Text = "0.000000001";
         }
 
         private void learningRateCombo_SelectedIndexChanged(object sender, EventArgs e)
@@ -60,6 +67,9 @@ namespace ArtificialNeuralNetworkVisualizer
 
         private void trainAnn_Click(object sender, EventArgs e)
         {
+            //  Start timer
+            //this.backgroundWorker1.RunWorkerAsync();
+
             //  Check if training set is loaded
             if (this.ann != null && this.trainingSet != null && this.trainingSet.InputMatrix.Rows() == this.ann.Layers[0].NumberOfNeurons && this.trainingSet.TargetMatrix.Rows() == this.ann.Layers[this.ann.Layers.Count - 1].NumberOfNeurons)
             {
@@ -79,7 +89,7 @@ namespace ArtificialNeuralNetworkVisualizer
                 //  Setup visualization of data
                 Legend legend = new Legend("Legend");
                 ChartArea errorChart = new ChartArea("ErrorChart"), outputChart = new ChartArea("OutputChart");
-                Series errorSequence = new Series("Errors"), targetSequence = new Series("Target"), outputSequence = new Series("Output");
+                Series errorSequence = new Series("Errors"), targetSequence = new Series("Target"), outputSequence = new Series("Output"), history;
 
                 errorChart.AxisX.Title = "Epochs";
                 errorChart.AxisY.Title = "Cost";
@@ -97,12 +107,15 @@ namespace ArtificialNeuralNetworkVisualizer
                 targetSequence.Legend = "Legend";
                 targetSequence.LegendText = "Target";
                 targetSequence.Color = Color.Green;
+                targetSequence.MarkerStyle = MarkerStyle.Circle;
+                targetSequence.MarkerSize = 10;
                 targetSequence.ChartType = SeriesChartType.Line;
 
                 outputSequence.ChartArea = outputChart.Name;
                 outputSequence.Legend = "Legend";
                 outputSequence.LegendText = "Output";
                 outputSequence.Color = Color.Red;
+                outputSequence.BorderWidth = 2;
                 outputSequence.ChartType = SeriesChartType.Line;
 
                 //  Get error over epochs
@@ -130,25 +143,95 @@ namespace ArtificialNeuralNetworkVisualizer
                 this.chart1.ChartAreas.Add(outputChart);
 
                 this.chart1.Series.Add(errorSequence);
+
+                foreach (var item in this.historyList)
+                {
+                    this.chart1.Series.Add(item);
+                }
+
                 this.chart1.Series.Add(targetSequence);
                 this.chart1.Series.Add(outputSequence);
+
+                //  Create history series
+                //history = new Series();
+                //history.ChartArea = outputChart.Name;
+                //history.Color = Color.Gray;
+                //history.IsVisibleInLegend = false;
+                //history.ChartType = SeriesChartType.Line;
+                //history.BorderWidth = 1;
+                
+                //foreach (var item in outputSequence.Points)
+                //{
+                //    history.Points.Add(item);
+                //}
+
+                //this.historyList.Add(history);
             }
             else
             {
                 MessageBox.Show("No artificial neural network was created nor the dimensions of it are compatible with the trainingset. Is dataset loaded? Training stopped!", "Error");
             }
 
+            //this.backgroundWorker1.CancelAsync();
+        }
+
+        private void generateAnn_Click(object sender, EventArgs e)
+        {
 
         }
 
-        private void loadDataset_Click(object sender, EventArgs e)
+        private void layersList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Layer selectedLayer = (Layer)this.layersList.SelectedItem;
+
+            this.transferFunction.DataSource = Enum.GetValues(typeof(ANN.Layer.TransferFunctions));
+            this.transferFunction.SelectedIndex = (int)selectedLayer.TransferFunction;
+
+            this.nrNeuronsInLayer.Text = selectedLayer.NumberOfNeurons.ToString();
+        }
+
+        private void transferFunction_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            Layer selectedLayer = (Layer)this.layersList.SelectedItem;
+
+            selectedLayer.SetTransfer((Layer.TransferFunctions)(this.transferFunction.SelectedItem));
+        }
+
+        private void saveDatasetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.InitialDirectory = "%home%";
+            saveFileDialog1.Filter = "Training set files (*.set)|*.set|All files (*.*)|*.*";
+            saveFileDialog1.FilterIndex = 1;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    this.trainingSet.SaveSet(saveFileDialog1.OpenFile());
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void loadDatasetToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.trainingSet = new TrainingSet();
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
             openFileDialog1.InitialDirectory = "%home%";
-            openFileDialog1.Filter = "bin files (*.bin)|*.bin|All files (*.*)|*.*";
-            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.Filter = "Training set files (*.set)|*.set|All files (*.*)|*.*";
+            openFileDialog1.FilterIndex = 1;
             openFileDialog1.RestoreDirectory = true;
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
@@ -164,31 +247,107 @@ namespace ArtificialNeuralNetworkVisualizer
             }
         }
 
-        private void generateAnn_Click(object sender, EventArgs e)
+        private void createNewAnnCompatibleDatasetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int inputs = Int32.Parse(this.nrInputs.Text),
-                hiddenLayers = Int32.Parse(this.hiddenLayers.Text),
-                neuronsPerHiddenLayer = Int32.Parse(this.hiddenNeurons.Text),
-                outputs = Int32.Parse(this.nrOutput.Text);
+            if (this.createNewAnnCompatibleDatasetToolStripMenuItem.Checked)
+                this.createNewAnnCompatibleDatasetToolStripMenuItem.Checked = false;
+            else
+                this.createNewAnnCompatibleDatasetToolStripMenuItem.Checked = true;
+        }
 
-            this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs);
+        private void generateDatasetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.historyList = new List<Series>();
+            this.generator = new TrainingSetGenerator((TrainingSetGenerator.Signals)this.generatorSignals.SelectedItem);
+            this.trainingSet = this.generator.GenerateData();
+
+            if (this.createNewAnnCompatibleDatasetToolStripMenuItem.Checked)
+            {
+                this.toolStripTextBox1.Text = this.trainingSet.InputMatrix.Rows().ToString();
+                this.toolStripTextBox2.Text = this.trainingSet.TargetMatrix.Rows().ToString();
+
+                int inputs = Int32.Parse(this.toolStripTextBox1.Text),
+                    hiddenLayers = Int32.Parse(this.toolStripTextBox3.Text),
+                    neuronsPerHiddenLayer = Int32.Parse(this.toolStripTextBox4.Text),
+                    outputs = Int32.Parse(this.toolStripTextBox2.Text);
+
+                this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs, (Layer.TransferFunctions)this.layerTransfer.ComboBox.SelectedItem);
+
+                this.layersList.DataSource = this.ann.Layers;
+            }
+        }
+
+        private void generateANNToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int inputs = Int32.Parse(this.toolStripTextBox1.Text),
+                hiddenLayers = Int32.Parse(this.toolStripTextBox3.Text),
+                neuronsPerHiddenLayer = Int32.Parse(this.toolStripTextBox4.Text),
+                outputs = Int32.Parse(this.toolStripTextBox2.Text);
+
+            this.historyList = new List<Series>();
+            this.ann = new ArtificialNeuralNetwork.ArtificialNeuralNetwork(inputs, hiddenLayers, neuronsPerHiddenLayer, outputs, (Layer.TransferFunctions)this.layerTransfer.ComboBox.SelectedItem);
 
             this.layersList.DataSource = this.ann.Layers;
         }
 
-        private void layersList_SelectedIndexChanged(object sender, EventArgs e)
+        private void layerTransfer_Click(object sender, EventArgs e)
         {
-            Layer selectedLayer = (Layer)this.layersList.SelectedItem;
 
-            this.transferFunction.DataSource = Enum.GetValues(typeof(ANN.Layer.TransferFunctions));
-            this.transferFunction.SelectedIndex = (int)selectedLayer.TransferFunction;
         }
 
-        private void transferFunction_SelectionChangeCommitted(object sender, EventArgs e)
+        private void computeOutput_Click(object sender, EventArgs e)
+        {
+            string[] list = this.inputManual.Text.Split(new char[] { ',' });
+            double[] input = Array.ConvertAll(list, str => double.Parse(str));
+
+            double[] output = this.ann.FeedForward(input);
+
+            this.outputManual.Text = output.VectorToString();
+
+            return;
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            long msTimeElapsed = 0, current;
+            long interval = 10;
+
+            while (!this.backgroundWorker1.CancellationPending)
+            {
+                current = stopWatch.ElapsedMilliseconds;
+                interval -= current + msTimeElapsed;
+                msTimeElapsed = current;
+
+                if (interval <= 0)
+                {
+                    interval = 10;
+
+                    this.timeElapsed.Text = msTimeElapsed.ToString();
+                }
+            }
+
+            e.Cancel = true;
+            return;
+        }
+
+        private void setNeurons_Click(object sender, EventArgs e)
         {
             Layer selectedLayer = (Layer)this.layersList.SelectedItem;
+            int neurons = Int32.Parse(this.nrNeuronsInLayer.Text), index = selectedLayer.Text.IndexOf('(');
 
-            selectedLayer.SetTransfer((Layer.TransferFunctions)(this.transferFunction.SelectedItem));
+            selectedLayer.SetNumberOfNeurons(neurons);
+            if (selectedLayer.NextLayer != null) selectedLayer.NextLayer.SetNumberOfInputNeurons(neurons);
+            selectedLayer.Text = selectedLayer.Text.Substring(0, index) + "(Neurons = " + neurons + " + 1)";
+
+            //this.layersList.Refresh();
+            this.layersList.DataSource = this.ann.Layers;
+        }
+
+        private void copyOutput_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(this.outputManual.Text);
         }
     }
 }
