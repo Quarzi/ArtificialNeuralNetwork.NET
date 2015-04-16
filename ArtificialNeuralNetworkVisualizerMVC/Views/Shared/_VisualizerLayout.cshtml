@@ -1,0 +1,21 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@ViewBag.Title</h2>
+
+
+<div class="col-md-12">
+    <div class="col-md-3">
+        <div class="row">
+            @RenderSection("Toolbox", true)
+        </div>
+    </div>
+
+
+    <div class="col-md-9">
+        <div class="row">
+            @RenderSection("GrafView", true)
+        </div>
+    </div>
+</div>

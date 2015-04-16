@@ -1,0 +1,13 @@
+﻿@{
+    ViewBag.Title = "Vizualizer";
+    Layout = "~/Views/Shared/_VisualizerLayout.cshtml";
+}
+
+
+@section Toolbox{
+    @Html.Action("ToolBox", "Visualizer")
+}
+
+@section GrafView{
+    @Html.Action("GrafView", "Visualizer")
+}
