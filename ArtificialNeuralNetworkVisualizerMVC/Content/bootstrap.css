@@ -1571,7 +1571,7 @@ pre code {
   border-radius: 0;
 }
 .pre-scrollable {
-  max-height: 340px;
+  max-height: 400px;
   overflow-y: scroll;
 }
 .container {
