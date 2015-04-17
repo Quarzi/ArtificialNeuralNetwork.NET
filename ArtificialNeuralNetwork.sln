@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtificialNeuralNetworkVisu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtificialNeuralNetworkExtensionMethods", "ArtificialNeuralNetworkExtensionMethods\ArtificialNeuralNetworkExtensionMethods.csproj", "{57BCDAF4-DE27-4D1A-8F8B-94AD9D29FB90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtificialNeuralNetworkVisualizerMVC", "ArtificialNeuralNetworkVisualizerMVC\ArtificialNeuralNetworkVisualizerMVC.csproj", "{5551BF64-8315-4A9C-8EFF-F587FA762CBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{57BCDAF4-DE27-4D1A-8F8B-94AD9D29FB90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57BCDAF4-DE27-4D1A-8F8B-94AD9D29FB90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57BCDAF4-DE27-4D1A-8F8B-94AD9D29FB90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5551BF64-8315-4A9C-8EFF-F587FA762CBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5551BF64-8315-4A9C-8EFF-F587FA762CBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5551BF64-8315-4A9C-8EFF-F587FA762CBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5551BF64-8315-4A9C-8EFF-F587FA762CBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
